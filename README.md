@@ -81,6 +81,8 @@ In order to contribute to the project, please follow the **GitHub Standard Fork 
 - [Node.js Telegram Bot API](https://github.com/mast/telegram-bot-api)
 - [XML2JS](https://github.com/Leonidas-from-XIV/node-xml2js)
 
+**Thanks to [BeepFelix](https://github.com/BeepFelix) for his [BeepFelix@CSGO-Overwatch-Bot](https://github.com/BeepFelix/CSGO-Overwatch-Bot). I have re-used a decent amount of code from it.**
+
 ## Donating
 If you find this script useful, you can support me by donating items via steam.  
 [Steam Trade Link](https://steamcommunity.com/tradeoffer/new/?partner=169517256&token=77MTawmP)
