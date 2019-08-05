@@ -3,6 +3,9 @@
 [![forthebadge](https://forthebadge.com/images/badges/uses-js.svg)](https://forthebadge.com)  
 A simple Node.js script that lets you check if a steam-profile is in overwatch via Telegram Bot.
 
+## Proof of Concept
+This script is a realization of an idea in order to demonstrate its feasibility and to verify that this concept has practical potential. To make this script functional on a large scale, you would need to have an almost infinite number of accounts.
+
 ## Requirements
 In order to use this bot, you need the following dependencies and tokens:
 - Node.js
