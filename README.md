@@ -19,7 +19,8 @@ In order to use this bot, you need the following dependencies and tokens:
 - Edit `accounts.json` and enter your account credentials. You can add multiple accounts.
 - Type `npm install` into your console of choice to install Node.js dependencies
 - Type `npm start` or `node server.js` to start the bot.
-  - To find out how to run the script permanently on a server you should check out [forever](https://github.com/foreversd/forever)
+  - To find out how to run the script permanently on a server you should check out [forever](https://github.com/foreversd/forever)  
+  
 **The script does not properly check if your config is valid or has missing information.**  
 **Make sure you have everything set up properly!**  
 
@@ -44,7 +45,8 @@ In most cases, files only have to be moved or renamed.
   - Examples:
     - `/check 12345678912345678`
 	- `/check http://steamcommunity.com/profiles/12345678912345678`
-    - `/check https://steamcommunity.com/id/customURL`
+    - `/check https://steamcommunity.com/id/customURL`  
+
 To get the steamID64 or URL of a profile you can use websites like [STEAMID I/O](https://steamid.io/).  
 
 ## Retrieve your Telegram Chat ID
