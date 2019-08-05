@@ -12,7 +12,7 @@ The script utilizes the specified accounts to download and resolve Overwatch Cas
 ## Why should I check if someone has an active Overwatch Case?
 Honestly? I dont know. I came across a miserable and private implementation of this idea and thought I could implement a better prototype that is suitable as an open-source proof of concept.  
 
-However, on a large scale this could be very useful. You could check a current opponent to see if he is cheating or at least held for it. On the other - "evil" side you could have your own account monitored, for example to trade away valuable skins when the account gets into Overwatch.
+However, on a large scale this could be very useful. You could check a current opponent to see if he is cheating or at least being held for it. On the other - "evil" side you could have your own account monitored, for example to trade away valuable skins when the account gets into Overwatch.
 
 ## Requirements
 In order to use this bot, you need the following dependencies and tokens:
