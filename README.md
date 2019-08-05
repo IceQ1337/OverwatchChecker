@@ -6,6 +6,9 @@ A simple Node.js script that lets you check if a steam-profile is in overwatch v
 ## Proof of Concept
 This script is a realization of an idea in order to demonstrate its feasibility and to verify that this concept has practical potential. To make this script functional on a large scale, you would need to have an almost infinite number of accounts.
 
+## How It Works
+The script utilizes the specified accounts to download and resolve overwatch cases in order to obtain information about the suspect, which is then stored in a database. This process is repeated by the accounts as often as possible to collect as much data as possible. When the telegram bot is used, the script will check if the account has an entry in the database. Since it may be that an account doesn't get banned by Overwatch, this script considers only cases within the last `EstimatedOverwatchPeriod` hours as active cases.
+
 ## Requirements
 In order to use this bot, you need the following dependencies and tokens:
 - Node.js
