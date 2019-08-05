@@ -9,6 +9,9 @@ This script is a realization of an idea in order to demonstrate its feasibility 
 ## How It Works
 The script utilizes the specified accounts to download and resolve overwatch cases in order to obtain information about the suspect, which is then stored in a database. This process is repeated by the accounts as often as possible to collect as much data as possible. When a user checks an account, the script will check if the account has an entry in the database. Since it may be that an account doesn't get banned by Overwatch, this script considers only cases within the last `EstimatedOverwatchPeriod` hours as active cases. Always remember that this is a proof of concept and would require millions of accounts to work properly.
 
+## Why should I check if someone has an active Overwatch Case?
+Honestly? I dont know. I came across a miserable and private implementation of this idea and thought I could implement a better prototype that is suitable as an open-source proof of concept.
+
 ## Requirements
 In order to use this bot, you need the following dependencies and tokens:
 - Node.js
