@@ -294,16 +294,30 @@ checkProtobufs.then(() => {
                                             let reportOther = parseInt(Config.OverwatchVerdict.charAt(2));
                                             let reportGriefing = parseInt(Config.OverwatchVerdict.charAt(3));
 
-                                            let convictionObj = {
-                                                caseid: caseUpdate.caseid,
-                                                suspectid: caseUpdate.suspectid,
-                                                fractionid: caseUpdate.fractionid,
-                                                rpt_aimbot: (reportAimbot == 1 || reportAimbot == 0 ? reportAimbot : 0),
-                                                rpt_wallhack: (reportWallhack == 1 || reportWallhack == 0 ? reportWallhack : 0),
-                                                rpt_speedhack: (reportOther == 1 || reportOther == 0 ? reportOther : 0),
-                                                rpt_teamharm: (reportGriefing == 1 || reportGriefing == 0 ? reportGriefing : 0),
-                                                reason: 3
-                                            };
+                                            let convictionObj = {};
+                                            if (Config.Whitelist && Config.Whitelist.includes(caseUpdate.suspectid)) {
+                                                convictionObj = {
+                                                    caseid: caseUpdate.caseid,
+                                                    suspectid: caseUpdate.suspectid,
+                                                    fractionid: caseUpdate.fractionid,
+                                                    rpt_aimbot: 0,
+                                                    rpt_wallhack: 0,
+                                                    rpt_speedhack: 0,
+                                                    rpt_teamharm: 0,
+                                                    reason: 3
+                                                };
+                                            } else {
+                                                convictionObj = {
+                                                    caseid: caseUpdate.caseid,
+                                                    suspectid: caseUpdate.suspectid,
+                                                    fractionid: caseUpdate.fractionid,
+                                                    rpt_aimbot: (reportAimbot == 1 || reportAimbot == 0 ? reportAimbot : 0),
+                                                    rpt_wallhack: (reportWallhack == 1 || reportWallhack == 0 ? reportWallhack : 0),
+                                                    rpt_speedhack: (reportOther == 1 || reportOther == 0 ? reportOther : 0),
+                                                    rpt_teamharm: (reportGriefing == 1 || reportGriefing == 0 ? reportGriefing : 0),
+                                                    reason: 3
+                                                };
+                                            }
                 
                                             if ((caseData.endTime - caseData.startTime) < (240 * 1000)) {
                                                 let timer = parseInt((240 * 1000) - (caseData.endTime - caseData.startTime)) / 1000;

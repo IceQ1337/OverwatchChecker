@@ -46,7 +46,8 @@ In most cases, files only have to be moved or renamed.
 	"TelegramBotToken": "Telegram Bot Token", // Your Telegram Bot Token
 	"TelegramMasterChatID": "Telegram Chat ID", // Your Telegram Chat ID
 	"EstimatedOverwatchPeriod": "48", // Explanation Below
-	"OverwatchVerdict": "2211" // Explanation Below
+	"OverwatchVerdict": "2211", // Explanation Below
+	"Whitelist": [] // Accounts you don't want to report
 }
 ```
 
