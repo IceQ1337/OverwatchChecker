@@ -1,16 +1,18 @@
 # Overwatch Checker (Proof of Concept)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/uses-js.svg)](https://forthebadge.com)  
-A simple Node.js script that lets you check if a steam-profile is in overwatch via Telegram Bot.
+A simple Node.js script that lets you check if a steam-profile is in Overwatch via Telegram Bot.
 
 ## Proof of Concept
 This script is a realization of an idea in order to demonstrate its feasibility and to verify that this concept has practical potential. To make this script functional on a large scale, you would need to have an almost infinite number of accounts.
 
 ## How It Works
-The script utilizes the specified accounts to download and resolve overwatch cases in order to obtain information about the suspect, which is then stored in a database. This process is repeated by the accounts as often as possible to collect as much data as possible. When a user checks an account, the script will check if the account has an entry in the database. Since it may be that an account doesn't get banned by Overwatch, this script considers only cases within the last `EstimatedOverwatchPeriod` hours as active cases. Always remember that this is a proof of concept and would require millions of accounts to work properly.
+The script utilizes the specified accounts to download and resolve Overwatch Cases in order to obtain information about the suspect, which is then stored in a database. This process is repeated by the accounts as often as possible to collect as much data as possible. When a user checks an account, the script will check if the account has an entry in the database. Since it may be that an account doesn't get banned by Overwatch, this script considers only cases within the last `EstimatedOverwatchPeriod` hours as active cases. Always remember that this is a proof of concept and would require millions of accounts to work properly.
 
 ## Why should I check if someone has an active Overwatch Case?
-Honestly? I dont know. I came across a miserable and private implementation of this idea and thought I could implement a better prototype that is suitable as an open-source proof of concept.
+Honestly? I dont know. I came across a miserable and private implementation of this idea and thought I could implement a better prototype that is suitable as an open-source proof of concept.  
+
+However, on a large scale this could be very useful. You could check a current opponent to see if he is cheating or at least held for it. On the other - "evil" side you could have your own account monitored, for example to trade away valuable skins when the account gets into Overwatch.
 
 ## Requirements
 In order to use this bot, you need the following dependencies and tokens:
