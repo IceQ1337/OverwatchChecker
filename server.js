@@ -211,7 +211,7 @@ checkProtobufs.then(() => {
                     if (caseUpdate.caseurl) {
                         caseData.owMSG = caseUpdate;
 
-                        if (FS.existsSync('./demofile.dem')) FS.unlinkSync('./demofile.dem');
+                        if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.dem')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.dem');
                         console.log(logTag + 'Downloading Case ' + caseUpdate.caseid + ' from: ' + caseUpdate.caseurl);
                 
                         let sid = SteamID.fromIndividualAccountID(caseUpdate.suspectid);
@@ -224,7 +224,7 @@ checkProtobufs.then(() => {
                 
                         let r = Request(caseUpdate.caseurl);
                         r.on('response', (res) => {
-                            res.pipe(FS.createWriteStream('./demofile.bz2')).on('close', async () => {
+                            res.pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.bz2')).on('close', async () => {
                                 console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
                 
                                 await csgoClient.sendMessage(
@@ -241,13 +241,13 @@ checkProtobufs.then(() => {
                                     30000
                                 );
                 
-                                FS.createReadStream('./demofile.bz2').pipe(BZ2()).pipe(FS.createWriteStream('./demofile.dem')).on('close', () => {
-                                    FS.unlinkSync('./demofile.bz2');
+                                FS.createReadStream('./demo/' + steamClient.steamID.toString() + '.bz2').pipe(BZ2()).pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.dem')).on('close', () => {
+                                    FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.bz2');
 
                                     caseData.startTime = Date.now();
                                     console.log(logTag + 'Finished unpacking ' + caseUpdate.caseid + ', parsing as suspect ' + sid.getSteamID64() + '...');
                 
-                                    FS.readFile('./demofile.dem', (err, buffer) => {
+                                    FS.readFile('./demo/' + steamClient.steamID.toString() + '.dem', (err, buffer) => {
                                         if (err) return console.error(err);
                 
                                         let lastProg = -1;
@@ -325,7 +325,7 @@ checkProtobufs.then(() => {
                                                 await new Promise(r => setTimeout(r, (timer * 1000)));
                                             }
 
-                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, timestamp: caseUpdate.timestamp }, (err) => {
+                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: sid.getSteamID64(), timestamp: Date.now() }, (err) => {
                                                 if (err) {
                                                     console.error(err);
                                                 }

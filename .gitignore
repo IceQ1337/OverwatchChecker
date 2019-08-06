@@ -4,4 +4,5 @@ utility/protobufs/
 config.json
 accounts.json
 casedata.db
-demofile.dem
+*.bz2
+*.dem
