@@ -145,7 +145,7 @@ checkProtobufs.then(() => {
             console.log(logTag + 'Successfully logged into Steam.');
     
             // Source: https://github.com/BeepFelix/CSGO-Overwatch-Bot/blob/master/index.js
-            csgoClient = new GameCoordinator(steamClient);
+            var csgoClient = new GameCoordinator(steamClient);
             console.log(logTag + 'Establishing CSGO GameCoordinator Connection...');
             steamClient.gamesPlayed([730]);
             await csgoClient.start();
@@ -373,7 +373,7 @@ checkProtobufs.then(() => {
                 }
                 resolveOverwatchCase();
             } else {
-                console.error('Unable to retrieve MM Rank for: ' + steamClient.steamID.toString());
+                console.error(logTag + 'Unable to retrieve MM Rank.');
             }
         });
     
