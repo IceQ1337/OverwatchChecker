@@ -95,9 +95,9 @@ function checkSteamProfile(steamID64, chatID) {
                     pastCases.push(`CaseID: ${result.caseid}, Map: ${result.mapName}\n`);
                 }
             });
-            sendMessage(`Current Overwatch Cases for: ${steamID}\n${recentCases.join('')}\nPast Overwatch Cases:\n${pastCases.join('')}`, chatID);
+            sendMessage(`Current Overwatch Cases for: ${steamID64}\n${recentCases.join('')}\nPast Overwatch Cases:\n${pastCases.join('')}`, chatID);
         } else {
-            sendMessage(`'${steamID}' is not in our overwatch database.`, chatID);
+            sendMessage(`'${steamID64}' is not in our overwatch database.`, chatID);
         }
     });
 }
