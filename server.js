@@ -375,6 +375,7 @@ checkProtobufs.then(() => {
                 resolveOverwatchCase();
             } else {
                 console.error(logTag + 'Unable to retrieve MM Rank.');
+                steamClient.logOff();
             }
         });
     
