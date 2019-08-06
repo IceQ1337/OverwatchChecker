@@ -29,7 +29,7 @@ const REGEX_STEAMCUSTOMURL = /^(http|https):\/\/(www\.)?steamcommunity.com\/id\/
 
 const TelegramBot = new Telegram({ token: Config.TelegramBotToken, updates: { enabled: true } });
 
-function sendMessage(messageText, chatID) {
+function sendMessage(messageText, chatID = Config.TelegramMasterChatID) {
     TelegramBot.sendMessage({
         chat_id: chatID,
         text: messageText,
@@ -103,13 +103,6 @@ const BZ2 = require('unbzip2-stream');
 const Helper = require('./utility/Helper.js');
 const GameCoordinator = require('./utility/GameCoordinator.js');
 var steamClients = [];
-
-var caseData = {
-    suspectID: undefined,
-    owMSG: undefined,
-    startTime: 0,
-    endTime: 0
-}
 
 var checkProtobufs = new Promise((resolve, reject) => {
     console.log('Checking Protobufs...');
@@ -191,6 +184,14 @@ checkProtobufs.then(() => {
                     return;
                 }
 
+                var caseData = {
+                    owMSG: undefined,
+                    suspectID: undefined,
+                    mapName: undefined,
+                    startTime: 0,
+                    endTime: 0
+                }
+
                 console.log(logTag + 'Starting Overwatch Cases...');
                 async function resolveOverwatchCase() {
                     console.log(logTag + 'Requesting Overwatch Case...');
@@ -255,6 +256,11 @@ checkProtobufs.then(() => {
                                         let playerIndex = -1;
                                         const demoFile = new Demofile.DemoFile();
                 
+                                        demoFile.on('start', () => {
+                                            let demoHeader = demoFile.header;
+                                            caseData.mapName = demoHeader.mapName;
+                                        });
+
                                         demoFile.gameEvents.on('player_connect', getPlayerIndex);
                                         demoFile.gameEvents.on('player_disconnect', getPlayerIndex);
                                         demoFile.gameEvents.on('round_freeze_end', getPlayerIndex);
@@ -288,7 +294,7 @@ checkProtobufs.then(() => {
                                             if (err.error) {
                                                 console.error(err);
                                             }
-                                            console.log(logTag + 'Done Parsing Case: ' + caseUpdate.caseid);
+                                            console.log(logTag + 'Done Parsing Case: ' + caseUpdate.caseid + ' (Map: ' + caseData.mapName + ')');
                 
                                             let reportAimbot = parseInt(Config.OverwatchVerdict.charAt(0));
                                             let reportWallhack = parseInt(Config.OverwatchVerdict.charAt(1));
@@ -298,6 +304,7 @@ checkProtobufs.then(() => {
                                             let convictionObj = {};
                                             if (Config.Whitelist && Config.Whitelist.includes(sid.getSteamID64())) {
                                                 console.log(logTag + 'Account is whitelisted and will not be reported.');
+                                                sendMessage(logTag + 'A whitelisted account got overwatched!\nDemo: '+ caseUpdate.caseurl);
                                                 convictionObj = {
                                                     caseid: caseUpdate.caseid,
                                                     suspectid: caseUpdate.suspectid,
@@ -321,17 +328,17 @@ checkProtobufs.then(() => {
                                                 };
                                             }
                 
+                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: sid.getSteamID64(), mapName: caseData.mapName, timestamp: Date.now() }, (err) => {
+                                                if (err) {
+                                                    console.error(err);
+                                                }
+                                            });
+                                            
                                             if ((caseData.endTime - caseData.startTime) < (240 * 1000)) {
                                                 let timer = parseInt((240 * 1000) - (caseData.endTime - caseData.startTime)) / 1000;
                                                 console.log(logTag + 'Waiting ' + timer + ' second' + (timer === 1 ? '' : 's') + ' to avoid being ignored by the GC.');
                                                 await new Promise(r => setTimeout(r, (timer * 1000)));
                                             }
-
-                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: sid.getSteamID64(), timestamp: Date.now() }, (err) => {
-                                                if (err) {
-                                                    console.error(err);
-                                                }
-                                            });
 
                                             let caseUpdate2 = await csgoClient.sendMessage(
                                                 730,
@@ -351,7 +358,7 @@ checkProtobufs.then(() => {
                                             }
                 
                                             if (!caseUpdate2.caseid) {
-                                                console.log('Unexpected Behaviour: Got a cooldown despite sending completion. Retrying in 30 seconds...');
+                                                console.log(logTag + 'Unexpected Behaviour: Got a cooldown despite sending completion. Retrying in 30 seconds...');
                                                 setTimeout(resolveOverwatchCase, (30 * 1000));
                                                 return;
                                             }
@@ -368,7 +375,7 @@ checkProtobufs.then(() => {
                             setTimeout(resolveOverwatchCase, ((caseUpdate.throttleseconds + 1) * 1000));
                             return;
                         }
-                        console.log('Unexpected Behaviour: Got a completion without sending one. Retrying in 30 seconds...');
+                        console.log(logTag + 'Unexpected Behaviour: Got a completion without sending one. Retrying in 30 seconds...');
                         setTimeout(resolveOverwatchCase, (30 * 1000));
                     }
                 }
