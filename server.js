@@ -80,22 +80,31 @@ function resolveCustomURL(customURL) {
     });
 }
 
+function convertTime(timestamp) {
+    var t = new Date(timestamp);
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var year = t.getFullYear();
+    var month = months[t.getMonth()];
+    var date = t.getDate();
+    var hour = t.getHours();
+    var min = t.getMinutes();
+    var sec = t.getSeconds();
+    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    return time;
+}
+
 function checkSteamProfile(steamID64, chatID) {
-    CaseDataDB.find({ steamid64: steamID64 }, (err, cases) => {
+    CaseDataDB.find({ steamid64: steamID64.toString() }, (err, cases) => {
         if (err) console.error(err);
         if (cases.length > 0) {
-            var recentCases = [];
-            var pastCases = [];
-
             var timeRange =  parseInt(Config.EstimatedOverwatchPeriod) || 48;
             cases.forEach((result) => {
                 if ((Date.now() - result.timestamp) > (60 * 60 * timeRange)) {
-                    recentCases.push(`CaseID: ${result.caseid}, Map: ${result.mapName}\n`);
+                    sendMessage(`Recent Overwatch Case: ${(result.mapName).replace('_', ' ')} from ${convertTime(result.timestamp)}`);
                 } else {
-                    pastCases.push(`CaseID: ${result.caseid}, Map: ${result.mapName}\n`);
+                    sendMessage(`Past Overwatch Case: ${(result.mapName).replace('_', ' ')} from ${convertTime(result.timestamp)}`);
                 }
             });
-            sendMessage(`Current Overwatch Cases for: ${steamID64}\n${recentCases.join('')}\nPast Overwatch Cases:\n${pastCases.join('')}`, chatID);
         } else {
             sendMessage(`'${steamID64}' is not in our overwatch database.`, chatID);
         }
@@ -336,7 +345,7 @@ checkProtobufs.then(() => {
                                             }
                 
                                             CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: sid.getSteamID64(), mapName: caseData.mapName, timestamp: Date.now() }, (err) => {
-                                                if (err) {
+                                                if (err && err.errorType != 'uniqueViolated') {
                                                     console.error(err);
                                                 }
                                             });
