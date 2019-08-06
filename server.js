@@ -157,7 +157,9 @@ checkProtobufs.then(() => {
             var csgoClient = new GameCoordinator(steamClient);
             console.log(logTag + 'Establishing CSGO GameCoordinator Connection...');
             steamClient.gamesPlayed([730]);
-            await csgoClient.start();
+            await csgoClient.start().catch((err) => {
+                console.error(err);
+            });
     
             let lang = (await Helper.DownloadLanguage('csgo_english.txt')).lang;
     
@@ -170,7 +172,9 @@ checkProtobufs.then(() => {
                 csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
                 csgoClient.Protos.csgo.CMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
                 30000
-            );
+            ).catch((err) => {
+                console.error(err);
+            });
     
             let rank = mmHello.ranking;
     
@@ -189,7 +193,9 @@ checkProtobufs.then(() => {
                         csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
                         csgoClient.Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
                         30000
-                    );
+                    ).catch((err) => {
+                        console.error(err);
+                    });
                     rank = rank.rankings[0];
                 }
         
@@ -224,7 +230,9 @@ checkProtobufs.then(() => {
                         csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
                         csgoClient.Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
                         30000
-                    );
+                    ).catch((err) => {
+                        console.error(err);
+                    });
 
                     if (caseUpdate.caseurl) {
                         caseData.owMSG = caseUpdate;
@@ -257,7 +265,9 @@ checkProtobufs.then(() => {
                                     undefined,
                                     undefined,
                                     30000
-                                );
+                                ).catch((err) => {
+                                    console.error(err);
+                                });
                 
                                 FS.createReadStream('./demo/' + steamClient.steamID.toString() + '.bz2').pipe(BZ2()).pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.dem')).on('close', () => {
                                     FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.bz2');
@@ -365,7 +375,9 @@ checkProtobufs.then(() => {
                                                 csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
                                                 csgoClient.Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
                                                 30000
-                                            );
+                                            ).catch((err) => {
+                                                console.error(err);
+                                            });
                 
                                             if (caseUpdate2.caseurl) {
                                                 console.log(logTag + 'Unexpected Behaviour: Got a new Case but sent convcitionObj. Retrying in 30 seconds...');
