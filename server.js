@@ -296,7 +296,7 @@ checkProtobufs.then(() => {
                                             let reportGriefing = parseInt(Config.OverwatchVerdict.charAt(3));
 
                                             let convictionObj = {};
-                                            if (Config.Whitelist && Config.Whitelist.includes(caseUpdate.suspectid)) {
+                                            if (Config.Whitelist && Config.Whitelist.includes(sid.getSteamID64())) {
                                                 convictionObj = {
                                                     caseid: caseUpdate.caseid,
                                                     suspectid: caseUpdate.suspectid,
