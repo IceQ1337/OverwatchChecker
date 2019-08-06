@@ -194,6 +194,7 @@ checkProtobufs.then(() => {
                 console.log(logTag + 'Starting Overwatch Cases...');
                 async function resolveOverwatchCase() {
                     console.log(logTag + 'Requesting Overwatch Case...');
+                    steamClient.uploadRichPresence(730, {'steam_display': '#display_overwatch'});
 
                     let caseUpdate = await csgoClient.sendMessage(
                         730,
