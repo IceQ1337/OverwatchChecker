@@ -297,6 +297,7 @@ checkProtobufs.then(() => {
 
                                             let convictionObj = {};
                                             if (Config.Whitelist && Config.Whitelist.includes(sid.getSteamID64())) {
+                                                console.log(logTag + 'Account is whitelisted and will not be reported.');
                                                 convictionObj = {
                                                     caseid: caseUpdate.caseid,
                                                     suspectid: caseUpdate.suspectid,
