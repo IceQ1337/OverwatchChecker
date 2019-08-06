@@ -84,11 +84,18 @@ function checkSteamProfile(steamID64, chatID) {
     CaseDataDB.find({ suspectid: steamID64 }, (err, cases) => {
         if (err) console.error(err);
         if (cases.length > 0) {
-            var caseIDs = [];
+            var recentCases = [];
+            var pastCases = [];
+
+            var timeRange =  parseInt(Config.EstimatedOverwatchPeriod) || 48;
             cases.forEach((result) => {
-                caseIDs.push(result.caseid);
+                if ((Date.now() - result.timestamp) > (60 * 60 * timeRange)) {
+                    recentCases.push(`CaseID: ${result.caseid}, Map: ${result.mapName}\n`);
+                } else {
+                    pastCases.push(`CaseID: ${result.caseid}, Map: ${result.mapName}\n`);
+                }
             });
-            sendMessage(`'${steamID}' is in our overwatch database. CaseIDs: ${caseIDs.join(',')}`, chatID);
+            sendMessage(`Current Overwatch Cases for: ${steamID}\n${recentCases.join('')}\nPast Overwatch Cases:\n${pastCases.join('')}`, chatID);
         } else {
             sendMessage(`'${steamID}' is not in our overwatch database.`, chatID);
         }
@@ -296,10 +303,10 @@ checkProtobufs.then(() => {
                                             }
                                             console.log(logTag + 'Done Parsing Case: ' + caseUpdate.caseid + ' (Map: ' + caseData.mapName + ')');
                 
-                                            let reportAimbot = parseInt(Config.OverwatchVerdict.charAt(0));
-                                            let reportWallhack = parseInt(Config.OverwatchVerdict.charAt(1));
-                                            let reportOther = parseInt(Config.OverwatchVerdict.charAt(2));
-                                            let reportGriefing = parseInt(Config.OverwatchVerdict.charAt(3));
+                                            let reportAimbot = parseInt(Config.OverwatchVerdict.charAt(0)) || 0;
+                                            let reportWallhack = parseInt(Config.OverwatchVerdict.charAt(1)) || 0;
+                                            let reportOther = parseInt(Config.OverwatchVerdict.charAt(2)) || 0;
+                                            let reportGriefing = parseInt(Config.OverwatchVerdict.charAt(3)) || 0;
 
                                             let convictionObj = {};
                                             if (Config.Whitelist && Config.Whitelist.includes(sid.getSteamID64())) {
