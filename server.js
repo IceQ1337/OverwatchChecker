@@ -81,7 +81,7 @@ function resolveCustomURL(customURL) {
 }
 
 function checkSteamProfile(steamID64, chatID) {
-    CaseDataDB.find({ suspectid: steamID64 }, (err, cases) => {
+    CaseDataDB.find({ steamid64: steamID64 }, (err, cases) => {
         if (err) console.error(err);
         if (cases.length > 0) {
             var recentCases = [];
