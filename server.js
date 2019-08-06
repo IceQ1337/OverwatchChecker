@@ -80,15 +80,15 @@ function resolveCustomURL(customURL) {
     });
 }
 
-function convertTime(timestamp) {
-    var t = new Date(timestamp);
+function printDate(timestamp = Date.now()) {
+    var d = new Date(timestamp);
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    var year = t.getFullYear();
-    var month = months[t.getMonth()];
-    var date = t.getDate();
-    var hour = t.getHours();
-    var min = t.getMinutes();
-    var sec = t.getSeconds();
+    var year = d.getFullYear();
+    var month = months[d.getMonth()];
+    var date = d.getDate();
+    var hour = d.getHours();
+    var min = d.getMinutes();
+    var sec = d.getSeconds();
     var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
     return time;
 }
@@ -100,9 +100,9 @@ function checkSteamProfile(steamID64, chatID) {
             var timeRange =  parseInt(Config.EstimatedOverwatchPeriod) || 48;
             cases.forEach((result) => {
                 if ((Date.now() - result.timestamp) > (60 * 60 * timeRange)) {
-                    sendMessage(`Recent Overwatch Case: ${(result.mapName).replace('_', ' ')} from ${convertTime(result.timestamp)}`);
+                    sendMessage(`Recent Overwatch Case: ${(result.mapName).replace('_', ' ')} from ${printDate(result.timestamp)}`);
                 } else {
-                    sendMessage(`Past Overwatch Case: ${(result.mapName).replace('_', ' ')} from ${convertTime(result.timestamp)}`);
+                    sendMessage(`Past Overwatch Case: ${(result.mapName).replace('_', ' ')} from ${printDate(result.timestamp)}`);
                 }
             });
         } else {
