@@ -354,7 +354,7 @@ checkProtobufs.then(() => {
                                                 };
                                             }
                 
-                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: sid.getSteamID64(), mapName: caseData.mapName, timestamp: Date.now() }, (err) => {
+                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: sid.getSteamID64(), mapName: caseData.mapName, downloadURL: caseUpdate.caseurl, timestamp: Date.now() }, (err) => {
                                                 if (err && err.errorType != 'uniqueViolated') {
                                                     console.error(err);
                                                 }
