@@ -7,7 +7,7 @@ const Telegram = require('telegram-bot-api');
 const Config = require(Path.join(__dirname, '/data/config.json'));
 const Accounts = require(Path.join(__dirname, '/data/accounts.json'));
 
-const CaseDataDB = new Datastore({ filename: Path.join(__dirname, '/data/db/casedata.db'), autoload: true });
+const CaseDataDB = new Datastore({ filename: Path.join(__dirname, '/data/casedata.db'), autoload: true });
 CaseDataDB.ensureIndex({ fieldName: 'caseid', unique: true }, (err) => {
     if (err) console.error(err);
 });
