@@ -81,6 +81,15 @@ In order to contribute to the project, please follow the **GitHub Standard Fork 
 - [Request](https://github.com/request/request)
 - [Node.js Telegram Bot API](https://github.com/mast/telegram-bot-api)
 - [XML2JS](https://github.com/Leonidas-from-XIV/node-xml2js)
+- [Steam-User](https://github.com/DoctorMcKay/node-steam-user)
+- [SteamID](https://github.com/DoctorMcKay/node-steamid)
+- [Steam-TOTP](https://github.com/DoctorMcKay/node-steam-totp)
+- [protobuf.js](https://github.com/protobufjs/protobuf.js)
+- [VDF](https://github.com/RJacksonm1/node-vdf)
+- [Demofile](https://github.com/saul/demofile)
+- [unzipper](https://github.com/ZJONSSON/node-unzipper)
+- [unbzip2-stream](https://github.com/regular/unbzip2-stream)
+- [ByteBuffer](https://github.com/protobufjs/bytebuffer.js)
 
 **Thanks to [BeepFelix](https://github.com/BeepFelix) for his [BeepFelix@CSGO-Overwatch-Bot](https://github.com/BeepFelix/CSGO-Overwatch-Bot). I have re-used a decent amount of code from it.**
 
