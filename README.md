@@ -89,4 +89,4 @@ If you find this script useful, you can support me by donating items via steam.
 [Steam Trade Link](https://steamcommunity.com/tradeoffer/new/?partner=169517256&token=77MTawmP)
 
 ## License
-[MIT](https://github.com/IceQ1337/SteamBanChecker/blob/master/LICENSE)
+[MIT](https://github.com/IceQ1337/OverwatchChecker/blob/master/LICENSE)
