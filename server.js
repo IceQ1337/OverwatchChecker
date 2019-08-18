@@ -270,7 +270,7 @@ checkProtobufs.then(() => {
                                 });
                 
                                 FS.createReadStream('./demo/' + steamClient.steamID.toString() + '.bz2').pipe(BZ2()).pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.dem')).on('close', () => {
-                                    FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.bz2');
+                                    if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.bz2')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.bz2');
 
                                     caseData.startTime = Date.now();
                                     console.log(logTag + 'Finished unpacking ' + caseUpdate.caseid + ', parsing as suspect ' + sid.getSteamID64() + '...');
