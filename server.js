@@ -149,7 +149,7 @@ checkProtobufs.then(() => {
 
     steamClients.forEach((steamClient) => {
         steamClient.on('loggedOn', async () => {
-            steamClient.setPersona(SteamUser.EPersonaState.Online);
+            steamClient.setPersona(SteamUser.EPersonaState.Invisible);
             var logTag = `[${steamClient.steamID.toString()}] `;
             console.log(logTag + 'Successfully logged into Steam.');
     
