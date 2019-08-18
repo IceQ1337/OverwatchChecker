@@ -248,8 +248,8 @@ checkProtobufs.then(() => {
                         }
                         caseData.suspectID = sid;
                 
-                        let r = Request(caseUpdate.caseurl);
-                        r.on('response', (res) => {
+                        let request = Request(caseUpdate.caseurl);
+                        request.on('response', (res) => {
                             res.pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.bz2')).on('close', async () => {
                                 console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
                 
@@ -363,7 +363,7 @@ checkProtobufs.then(() => {
                                             if ((caseData.endTime - caseData.startTime) < (240 * 1000)) {
                                                 let timer = parseInt((240 * 1000) - (caseData.endTime - caseData.startTime)) / 1000;
                                                 console.log(logTag + 'Waiting ' + timer + ' second' + (timer === 1 ? '' : 's') + ' to avoid being ignored by the GC.');
-                                                await new Promise(r => setTimeout(r, (timer * 1000)));
+                                                await new Promise(request => setTimeout(request, (timer * 1000)));
                                             }
 
                                             let caseUpdate2 = await csgoClient.sendMessage(
