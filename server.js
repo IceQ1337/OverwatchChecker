@@ -121,15 +121,15 @@ const GameCoordinator = require('./utility/GameCoordinator.js');
 var steamClients = [];
 
 var checkProtobufs = new Promise((resolve, reject) => {
-    console.log('Checking Protobufs...');
+    //console.log('Checking Protobufs...');
     let foundProtobufs = Helper.verifyProtobufs();
     if (foundProtobufs) {
-        console.log('Protobufs Found.');
+        //console.log('Protobufs Found.');
         resolve();
     } else {
-        console.log('Failed to find Protobufs, downloading and extracting...');
+        //console.log('Failed to find Protobufs, downloading and extracting...');
         Helper.downloadProtobufs(Path.join(__dirname, '/utility')).then(() => {
-            console.log('Download and Extraction successful.');
+            //console.log('Download and Extraction successful.');
             resolve();
         }).catch((err) => {
             reject(err);
@@ -151,11 +151,11 @@ checkProtobufs.then(() => {
         steamClient.on('loggedOn', async () => {
             steamClient.setPersona(SteamUser.EPersonaState.Invisible);
             var logTag = `[${steamClient.steamID.toString()}] `;
-            console.log(logTag + 'Successfully logged into Steam.');
+            //console.log(logTag + 'Successfully logged into Steam.');
     
             // Source: https://github.com/BeepFelix/CSGO-Overwatch-Bot/blob/master/index.js
             var csgoClient = new GameCoordinator(steamClient);
-            console.log(logTag + 'Establishing CSGO GameCoordinator Connection...');
+            //console.log(logTag + 'Establishing CSGO GameCoordinator Connection...');
             steamClient.gamesPlayed([730]);
             await csgoClient.start().catch((err) => {
                 console.error(err);
@@ -199,9 +199,9 @@ checkProtobufs.then(() => {
                     rank = rank.rankings[0];
                 }
         
-                console.log(logTag + 'is ' + lang.Tokens['skillgroup_' + rank.rank_id] + ' with ' + rank.wins + ' win' + (rank.wins === 1 ? '' : 's'));
+                //console.log(logTag + 'is ' + lang.Tokens['skillgroup_' + rank.rank_id] + ' with ' + rank.wins + ' win' + (rank.wins === 1 ? '' : 's'));
                 if (rank.rank_id < 7 || rank.wins < 150) {
-                    console.log(logTag + (rank.rank_id < 7 ? ' MM Rank is too low' : 'Not have enough wins') + ' in order to request Overwatch cases. Need at least 150 wins and ' + lang.Tokens['skillgroup_7'] + '.');
+                    //console.log(logTag + (rank.rank_id < 7 ? ' MM Rank is too low' : 'Not have enough wins') + ' in order to request Overwatch cases. Need at least 150 wins and ' + lang.Tokens['skillgroup_7'] + '.');
                     steamClient.logOff();
                     return;
                 }
@@ -214,9 +214,9 @@ checkProtobufs.then(() => {
                     endTime: 0
                 }
 
-                console.log(logTag + 'Starting Overwatch Cases...');
+                //console.log(logTag + 'Starting Overwatch Cases...');
                 async function resolveOverwatchCase() {
-                    console.log(logTag + 'Requesting Overwatch Case...');
+                    //console.log(logTag + 'Requesting Overwatch Case...');
                     steamClient.uploadRichPresence(730, {'steam_display': '#display_overwatch'});
 
                     let caseUpdate = await csgoClient.sendMessage(
@@ -238,11 +238,11 @@ checkProtobufs.then(() => {
                         caseData.owMSG = caseUpdate;
 
                         if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.dem')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.dem');
-                        console.log(logTag + 'Downloading Case ' + caseUpdate.caseid + ' from: ' + caseUpdate.caseurl);
+                        //console.log(logTag + 'Downloading Case ' + caseUpdate.caseid + ' from: ' + caseUpdate.caseurl);
                 
                         let sid = SteamID.fromIndividualAccountID(caseUpdate.suspectid);
                         if (!sid.isValid()) {
-                            console.log(logTag + 'Got invalid Suspect ID: ' + caseUpdate.suspectid);
+                            //console.log(logTag + 'Got invalid Suspect ID: ' + caseUpdate.suspectid);
                             resolveOverwatchCase();
                             return;
                         }
@@ -255,7 +255,7 @@ checkProtobufs.then(() => {
                         
                         request.on('response', (res) => {
                             res.pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.bz2')).on('close', async () => {
-                                console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
+                                //console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
                 
                                 await csgoClient.sendMessage(
                                     730,
@@ -277,7 +277,7 @@ checkProtobufs.then(() => {
                                     if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.bz2')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.bz2');
 
                                     caseData.startTime = Date.now();
-                                    console.log(logTag + 'Finished unpacking ' + caseUpdate.caseid + ', parsing as suspect ' + sid.getSteamID64() + '...');
+                                    //console.log(logTag + 'Finished unpacking ' + caseUpdate.caseid + ', parsing as suspect ' + sid.getSteamID64() + '...');
                 
                                     FS.readFile('./demo/' + steamClient.steamID.toString() + '.dem', (err, buffer) => {
                                         if (err) return console.error(err);
@@ -314,7 +314,7 @@ checkProtobufs.then(() => {
                                             }
                 
                                             lastProg = prog;
-                                            console.log(logTag + 'Parsing Demo: ' + prog + '%');
+                                            //console.log(logTag + 'Parsing Demo: ' + prog + '%');
                                         });
                 
                                         demoFile.parse(buffer);
@@ -324,7 +324,7 @@ checkProtobufs.then(() => {
                                             if (err.error) {
                                                 console.error(err);
                                             }
-                                            console.log(logTag + 'Done Parsing Case: ' + caseUpdate.caseid + ' (Map: ' + caseData.mapName + ')');
+                                            //console.log(logTag + 'Done Parsing Case: ' + caseUpdate.caseid + ' (Map: ' + caseData.mapName + ')');
                 
                                             let reportAimbot = parseInt(Config.OverwatchVerdict.charAt(0)) || 0;
                                             let reportWallhack = parseInt(Config.OverwatchVerdict.charAt(1)) || 0;
@@ -333,7 +333,7 @@ checkProtobufs.then(() => {
 
                                             let convictionObj = {};
                                             if (Config.Whitelist && Config.Whitelist.includes(sid.getSteamID64())) {
-                                                console.log(logTag + 'Account is whitelisted and will not be reported.');
+                                                //console.log(logTag + 'Account is whitelisted and will not be reported.');
                                                 sendMessage(logTag + 'A whitelisted account got overwatched!\nDemo: '+ caseUpdate.caseurl);
                                                 convictionObj = {
                                                     caseid: caseUpdate.caseid,
@@ -366,7 +366,7 @@ checkProtobufs.then(() => {
                                             
                                             if ((caseData.endTime - caseData.startTime) < (240 * 1000)) {
                                                 let timer = parseInt((240 * 1000) - (caseData.endTime - caseData.startTime)) / 1000;
-                                                console.log(logTag + 'Waiting ' + timer + ' second' + (timer === 1 ? '' : 's') + ' to avoid being ignored by the GC.');
+                                                //console.log(logTag + 'Waiting ' + timer + ' second' + (timer === 1 ? '' : 's') + ' to avoid being ignored by the GC.');
                                                 await new Promise(request => setTimeout(request, (timer * 1000)));
                                             }
 
@@ -384,13 +384,13 @@ checkProtobufs.then(() => {
                                             });
                 
                                             if (caseUpdate2.caseurl) {
-                                                console.log(logTag + 'Unexpected Behaviour: Got a new Case but sent convcitionObj. Retrying in 30 seconds...');
+                                                //console.log(logTag + 'Unexpected Behaviour: Got a new Case but sent convcitionObj. Retrying in 30 seconds...');
                                                 setTimeout(resolveOverwatchCase, (30 * 1000));
                                                 return;
                                             }
                 
                                             if (!caseUpdate2.caseid) {
-                                                console.log(logTag + 'Unexpected Behaviour: Got a cooldown despite sending completion. Retrying in 30 seconds...');
+                                                //console.log(logTag + 'Unexpected Behaviour: Got a cooldown despite sending completion. Retrying in 30 seconds...');
                                                 setTimeout(resolveOverwatchCase, (30 * 1000));
                                                 return;
                                             }
@@ -403,11 +403,11 @@ checkProtobufs.then(() => {
                         });
                     } else {
                         if (!caseUpdate.caseid) {
-                            console.log(logTag + 'We are still on cooldown... Waiting ' + (caseUpdate.throttleseconds + 1) + ' seconds...');
+                            //console.log(logTag + 'We are still on cooldown... Waiting ' + (caseUpdate.throttleseconds + 1) + ' seconds...');
                             setTimeout(resolveOverwatchCase, ((caseUpdate.throttleseconds + 1) * 1000));
                             return;
                         }
-                        console.log(logTag + 'Unexpected Behaviour: Got a completion without sending one. Retrying in 30 seconds...');
+                        //console.log(logTag + 'Unexpected Behaviour: Got a completion without sending one. Retrying in 30 seconds...');
                         setTimeout(resolveOverwatchCase, (30 * 1000));
                     }
                 }
