@@ -249,6 +249,10 @@ checkProtobufs.then(() => {
                         caseData.suspectID = sid;
                 
                         let request = Request(caseUpdate.caseurl);
+                        request.on('error', (err) => {
+                            console.error(err);
+                        });
+                        
                         request.on('response', (res) => {
                             res.pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.bz2')).on('close', async () => {
                                 console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
