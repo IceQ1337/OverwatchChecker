@@ -59,6 +59,10 @@ In most cases, files only have to be moved or renamed.
 	- `/check http://steamcommunity.com/profiles/12345678912345678`
     - `/check https://steamcommunity.com/id/customURL`  
 
+### Monitor Profiles
+- Use `/monitor <steamID64|profileURL>` to monitor a profile.  
+This will inform you as soon as the profile is the suspect of an overwatch case.
+
 To get the steamID64 or URL of a profile you can use websites like [STEAMID I/O](https://steamid.io/).  
 
 ## Retrieve your Telegram Chat ID
