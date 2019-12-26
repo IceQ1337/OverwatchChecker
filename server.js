@@ -8,7 +8,13 @@ const Config = require(Path.join(__dirname, '/data/config.json'));
 const Accounts = require(Path.join(__dirname, '/data/accounts.json'));
 
 const CaseDataDB = new Datastore({ filename: Path.join(__dirname, '/data/casedata.db'), autoload: true });
+const MonitorDB = new Datastore({ filename: Path.join(__dirname, '/data/monitored.db'), autoload: true });
+
 CaseDataDB.ensureIndex({ fieldName: 'caseid', unique: true }, (err) => {
+    if (err) console.error(err);
+});
+
+MonitorDB.ensureIndex({ fieldName: 'steamid64', unique: true }, (err) => {
     if (err) console.error(err);
 });
 
@@ -43,22 +49,47 @@ TelegramBot.on('message', (message) => {
     var chatID = message.from.id;
     var msg = message.text;
 
-    if (msg.startsWith('/check')) {
-        var steamID = msg.replace('/check ', '');
-        if (steamID.endsWith('/')) steamID = steamID.slice(0, -1);
-        if (steamID.match(REGEX_STEAMID64)) {
-            checkSteamProfile(steamID, chatID);
-        } else if (steamID.match(REGEX_STEAMURL64)) {
-            var steamID64 = steamID.replace(REGEX_STEAMURL, '');
-            checkSteamProfile(steamID64, chatID);
-        } else if (steamID.match(REGEX_STEAMCUSTOMURL)) {
-            resolveCustomURL(steamID).then((steamID64) => {
+    if (msg) {
+        if (msg.startsWith('/check')) {
+            var steamID = msg.replace('/check ', '');
+            if (steamID.endsWith('/')) steamID = steamID.slice(0, -1);
+            if (steamID.match(REGEX_STEAMID64)) {
+                checkSteamProfile(steamID, chatID);
+            } else if (steamID.match(REGEX_STEAMURL64)) {
+                var steamID64 = steamID.replace(REGEX_STEAMURL, '');
                 checkSteamProfile(steamID64, chatID);
-            }).catch(() => {
-                sendMessage('An unexpected error occurred.', chatID);
-            });
-        } else {
-            sendMessage(`'${steamID}' is not a valid steam-profile.`, chatID);
+            } else if (steamID.match(REGEX_STEAMCUSTOMURL)) {
+                resolveCustomURL(steamID).then((steamID64) => {
+                    checkSteamProfile(steamID64, chatID);
+                }).catch(() => {
+                    sendMessage('An unexpected error occurred.', chatID);
+                });
+            } else {
+                sendMessage(`'${steamID}' is not a valid steam-profile.`, chatID);
+            }
+        }
+
+        if (msg.startsWith('/monitor')) {
+            if (chatID == Config.TelegramMasterChatID) {
+                var steamID = msg.replace('/monitor ', '');
+                if (steamID.endsWith('/')) steamID = steamID.slice(0, -1);
+                if (steamID.match(REGEX_STEAMID64)) {
+                    monitorSteamProfile(steamID, chatID);
+                } else if (steamID.match(REGEX_STEAMURL64)) {
+                    var steamID64 = steamID.replace(REGEX_STEAMURL, '');
+                    monitorSteamProfile(steamID64, chatID);
+                } else if (steamID.match(REGEX_STEAMCUSTOMURL)) {
+                    resolveCustomURL(steamID).then((steamID64) => {
+                        monitorSteamProfile(steamID64, chatID);
+                    }).catch(() => {
+                        sendMessage('An unexpected error occurred.', chatID);
+                    });
+                } else {
+                    sendMessage(`'${steamID}' is not a valid steam-profile.`, chatID);
+                } 
+            } else {
+                sendMessage('Permission Denied.', chatID);
+            }        
         }
     }
 });
@@ -107,6 +138,20 @@ function checkSteamProfile(steamID64, chatID) {
             });
         } else {
             sendMessage(`'${steamID64}' is not in our overwatch database.`, chatID);
+        }
+    });
+}
+
+function monitorSteamProfile(steamID64, chatID) {
+    MonitorDB.insert({ steamid: steamID64 }, (err) => {
+        if (err) {
+            if (err.errorType == 'uniqueViolated') {
+                sendMessage(`${steamID64} is already being monitored.`, chatID);
+            } else {
+                sendMessage(`An unexpected error occurred.`, chatID);
+            }
+        } else {
+            sendMessage(`${steamID64} will now be monitored.`, chatID);
         }
     });
 }
@@ -332,9 +377,10 @@ checkProtobufs.then(() => {
                                             let reportGriefing = parseInt(Config.OverwatchVerdict.charAt(3)) || 0;
 
                                             let convictionObj = {};
-                                            if (Config.Whitelist && Config.Whitelist.includes(sid.getSteamID64())) {
+                                            let suspectSteamID = sid.getSteamID64();
+                                            if (Config.Whitelist && Config.Whitelist.includes(suspectSteamID)) {
                                                 //console.log(logTag + 'Account is whitelisted and will not be reported.');
-                                                sendMessage(logTag + 'A whitelisted account got overwatched!\nDemo: '+ caseUpdate.caseurl);
+                                                sendMessage(`A whitelisted account was spotted in an overwatch case on ${caseData.mapName}!\nDemo: ${caseUpdate.caseurl}`);
                                                 convictionObj = {
                                                     caseid: caseUpdate.caseid,
                                                     suspectid: caseUpdate.suspectid,
@@ -357,8 +403,13 @@ checkProtobufs.then(() => {
                                                     reason: 3
                                                 };
                                             }
-                
-                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: sid.getSteamID64(), mapName: caseData.mapName, downloadURL: caseUpdate.caseurl, timestamp: Date.now() }, (err) => {
+
+                                            MonitorDB.findOne({ steamid64: suspectSteamID }, (err, profile) => {
+                                                if (err) console.error(err);
+                                                if (profile) sendMessage(`A monitored account was spotted in an overwatch case on ${caseData.mapName}!\nDemo: ${caseUpdate.caseurl}`);
+                                            });
+
+                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: suspectSteamID, mapName: caseData.mapName, downloadURL: caseUpdate.caseurl, timestamp: Date.now() }, (err) => {
                                                 if (err && err.errorType != 'uniqueViolated') {
                                                     console.error(err);
                                                 }
