@@ -143,7 +143,7 @@ function checkSteamProfile(steamID64, chatID) {
 }
 
 function monitorSteamProfile(steamID64, chatID) {
-    MonitorDB.insert({ steamid: steamID64 }, (err) => {
+    MonitorDB.insert({ steamid64: steamID64 }, (err) => {
         if (err) {
             if (err.errorType == 'uniqueViolated') {
                 sendMessage(`${steamID64} is already being monitored.`, chatID);
