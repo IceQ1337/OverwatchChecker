@@ -4,5 +4,6 @@ utility/protobufs/
 config.json
 accounts.json
 casedata.db
+monitored.db
 *.bz2
 *.dem
