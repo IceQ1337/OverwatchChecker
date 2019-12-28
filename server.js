@@ -182,6 +182,8 @@ var checkProtobufs = new Promise((resolve, reject) => {
     }
 });
 
+var csgoClients = [];
+
 checkProtobufs.then(() => {
     Accounts.forEach((account, accountIndex) => {
         let logonSettings = { accountName: account.username, password: account.password };
@@ -192,17 +194,18 @@ checkProtobufs.then(() => {
         steamClients[accountIndex].logOn(logonSettings);
     });
 
-    steamClients.forEach((steamClient) => {
+    steamClients.forEach((steamClient, steamClientIndex) => {
         steamClient.on('loggedOn', async () => {
             steamClient.setPersona(SteamUser.EPersonaState.Invisible);
             var logTag = `[${steamClient.steamID.toString()}] `;
             //console.log(logTag + 'Successfully logged into Steam.');
     
             // Source: https://github.com/BeepFelix/CSGO-Overwatch-Bot/blob/master/index.js
-            var csgoClient = new GameCoordinator(steamClient);
+
+            csgoClients[steamClientIndex] = new GameCoordinator(steamClient);
             //console.log(logTag + 'Establishing CSGO GameCoordinator Connection...');
             steamClient.gamesPlayed([730]);
-            await csgoClient.start().catch((err) => {
+            await csgoClients[steamClientIndex].start().catch((err) => {
                 console.error(err);
             });
     
@@ -211,14 +214,14 @@ checkProtobufs.then(() => {
             });
             let lang = langObj.lang;
     
-            let mmHello = await csgoClient.sendMessage(
+            let mmHello = await csgoClients[steamClientIndex].sendMessage(
                 730,
-                csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingClient2GCHello,
+                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingClient2GCHello,
                 {},
-                csgoClient.Protos.csgo.CMsgGCCStrike15_v2_MatchmakingClient2GCHello,
+                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_MatchmakingClient2GCHello,
                 {},
-                csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
-                csgoClient.Protos.csgo.CMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
+                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
+                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
                 30000
             ).catch((err) => {
                 console.error(err);
@@ -228,18 +231,18 @@ checkProtobufs.then(() => {
     
             if (!!rank) {
                 if (rank.rank_type_id !== 6) {
-                    rank = await csgoClient.sendMessage(
+                    rank = await csgoClients[steamClientIndex].sendMessage(
                         730,
-                        csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
+                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
                         {},
-                        csgoClient.Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
+                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
                         {
                             rankings: {
                                 rank_type_id: 6
                             }
                         },
-                        csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
-                        csgoClient.Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
+                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
+                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
                         30000
                     ).catch((err) => {
                         console.error(err);
@@ -267,16 +270,16 @@ checkProtobufs.then(() => {
                     //console.log(logTag + 'Requesting Overwatch Case...');
                     steamClient.uploadRichPresence(730, {'steam_display': '#display_overwatch'});
 
-                    let caseUpdate = await csgoClient.sendMessage(
+                    let caseUpdate = await csgoClients[steamClientIndex].sendMessage(
                         730,
-                        csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
                         {},
-                        csgoClient.Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
                         {
                             reason: 1
                         },
-                        csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
-                        csgoClient.Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
                         30000
                     ).catch((err) => {
                         console.error(err);
@@ -305,11 +308,11 @@ checkProtobufs.then(() => {
                             res.pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.bz2')).on('close', async () => {
                                 //console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
                 
-                                await csgoClient.sendMessage(
+                                await csgoClients[steamClientIndex].sendMessage(
                                     730,
-                                    csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
+                                    csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
                                     {},
-                                    csgoClient.Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
+                                    csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
                                     {
                                         caseid: caseUpdate.caseid,
                                         statusid: 1
@@ -424,14 +427,14 @@ checkProtobufs.then(() => {
                                                 await new Promise(request => setTimeout(request, (timer * 1000)));
                                             }
 
-                                            let caseUpdate2 = await csgoClient.sendMessage(
+                                            let caseUpdate2 = await csgoClients[steamClientIndex].sendMessage(
                                                 730,
-                                                csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                                                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
                                                 {},
-                                                csgoClient.Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                                                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
                                                 convictionObj,
-                                                csgoClient.Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
-                                                csgoClient.Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                                                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                                                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
                                                 30000
                                             ).catch((err) => {
                                                 console.error(err);
@@ -473,6 +476,7 @@ checkProtobufs.then(() => {
         });
 
         steamClient.on('error', (err) => {
+            if (csgoClients[steamClientIndex] && csgoClients[steamClientIndex]._GCHelloInterval) clearInterval(csgoClients[steamClientIndex]._GCHelloInterval);
             console.error(err);
         });
     });
