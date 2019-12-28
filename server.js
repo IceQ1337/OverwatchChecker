@@ -205,274 +205,282 @@ checkProtobufs.then(() => {
             csgoClients[steamClientIndex] = new GameCoordinator(steamClient);
             //console.log(logTag + 'Establishing CSGO GameCoordinator Connection...');
             steamClient.gamesPlayed([730]);
+
+            var connectionEstablished = true;
             await csgoClients[steamClientIndex].start().catch((err) => {
                 console.error(err);
+                connectionEstablished = false;
             });
     
-            /*
-            let langObj = await Helper.DownloadLanguage('csgo_english.txt').catch((err) => {
-                console.error(err);
-            });
-            let lang = langObj.lang;
-            */
-    
-            let mmHello = await csgoClients[steamClientIndex].sendMessage(
-                730,
-                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingClient2GCHello,
-                {},
-                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_MatchmakingClient2GCHello,
-                {},
-                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
-                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
-                30000
-            ).catch((err) => {
-                console.error(err);
-            });
-    
-            let rank = mmHello.ranking;
-    
-            if (!!rank) {
-                if (rank.rank_type_id !== 6) {
-                    rank = await csgoClients[steamClientIndex].sendMessage(
-                        730,
-                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
-                        {},
-                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
-                        {
-                            rankings: {
-                                rank_type_id: 6
-                            }
-                        },
-                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
-                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
-                        30000
-                    ).catch((err) => {
-                        console.error(err);
-                    });
-                    rank = rank.rankings[0];
-                }
-        
-                //console.log(logTag + 'is ' + lang.Tokens['skillgroup_' + rank.rank_id] + ' with ' + rank.wins + ' win' + (rank.wins === 1 ? '' : 's'));
-                if (rank.rank_id < 7 || rank.wins < 150) {
-                    //console.log(logTag + (rank.rank_id < 7 ? ' MM Rank is too low' : 'Not have enough wins') + ' in order to request Overwatch cases. Need at least 150 wins and ' + lang.Tokens['skillgroup_7'] + '.');
-                    steamClient.logOff();
-                    return;
-                }
+            if (connectionEstablished) {
+                /*
+                let langObj = await Helper.DownloadLanguage('csgo_english.txt').catch((err) => {
+                    console.error(err);
+                });
+                let lang = langObj.lang;
+                */
+            
+                let mmHello = await csgoClients[steamClientIndex].sendMessage(
+                    730,
+                    csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingClient2GCHello,
+                    {},
+                    csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_MatchmakingClient2GCHello,
+                    {},
+                    csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
+                    csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_MatchmakingGC2ClientHello,
+                    30000
+                ).catch((err) => {
+                    console.error(err);
+                });
 
-                var caseData = {
-                    owMSG: undefined,
-                    suspectID: undefined,
-                    mapName: undefined,
-                    startTime: 0,
-                    endTime: 0
-                }
+                let rank = mmHello.ranking;
 
-                //console.log(logTag + 'Starting Overwatch Cases...');
-                async function resolveOverwatchCase() {
-                    //console.log(logTag + 'Requesting Overwatch Case...');
-                    steamClient.uploadRichPresence(730, {'steam_display': '#display_overwatch'});
-
-                    let caseUpdate = await csgoClients[steamClientIndex].sendMessage(
-                        730,
-                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
-                        {},
-                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
-                        {
-                            reason: 1
-                        },
-                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
-                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
-                        30000
-                    ).catch((err) => {
-                        console.error(err);
-                    });
-
-                    if (caseUpdate.caseurl) {
-                        caseData.owMSG = caseUpdate;
-
-                        if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.dem')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.dem');
-                        //console.log(logTag + 'Downloading Case ' + caseUpdate.caseid + ' from: ' + caseUpdate.caseurl);
-                
-                        let sid = SteamID.fromIndividualAccountID(caseUpdate.suspectid);
-                        if (!sid.isValid()) {
-                            //console.log(logTag + 'Got invalid Suspect ID: ' + caseUpdate.suspectid);
-                            resolveOverwatchCase();
-                            return;
-                        }
-                        caseData.suspectID = sid;
-                
-                        let request = Request(caseUpdate.caseurl);
-                        request.on('error', (err) => {
+                if (!!rank) {
+                    if (rank.rank_type_id !== 6) {
+                        rank = await csgoClients[steamClientIndex].sendMessage(
+                            730,
+                            csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
+                            {},
+                            csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
+                            {
+                                rankings: {
+                                    rank_type_id: 6
+                                }
+                            },
+                            csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientGCRankUpdate,
+                            csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_ClientGCRankUpdate,
+                            30000
+                        ).catch((err) => {
                             console.error(err);
                         });
-                        
-                        request.on('response', (res) => {
-                            res.pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.bz2')).on('close', async () => {
-                                //console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
-                
-                                await csgoClients[steamClientIndex].sendMessage(
-                                    730,
-                                    csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
-                                    {},
-                                    csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
-                                    {
-                                        caseid: caseUpdate.caseid,
-                                        statusid: 1
-                                    },
-                                    undefined,
-                                    undefined,
-                                    30000
-                                ).catch((err) => {
-                                    console.error(err);
-                                });
-                
-                                FS.createReadStream('./demo/' + steamClient.steamID.toString() + '.bz2').pipe(BZ2()).pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.dem')).on('close', () => {
-                                    if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.bz2')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.bz2');
+                        rank = rank.rankings[0];
+                    }
+            
+                    //console.log(logTag + 'is ' + lang.Tokens['skillgroup_' + rank.rank_id] + ' with ' + rank.wins + ' win' + (rank.wins === 1 ? '' : 's'));
+                    if (rank.rank_id < 7 || rank.wins < 150) {
+                        //console.log(logTag + (rank.rank_id < 7 ? ' MM Rank is too low' : 'Not have enough wins') + ' in order to request Overwatch cases. Need at least 150 wins and ' + lang.Tokens['skillgroup_7'] + '.');
+                        steamClient.logOff();
+                        return;
+                    }
 
-                                    caseData.startTime = Date.now();
-                                    //console.log(logTag + 'Finished unpacking ' + caseUpdate.caseid + ', parsing as suspect ' + sid.getSteamID64() + '...');
-                
-                                    FS.readFile('./demo/' + steamClient.steamID.toString() + '.dem', (err, buffer) => {
-                                        if (err) return console.error(err);
-                
-                                        let lastProg = -1;
-                                        let playerIndex = -1;
-                                        const demoFile = new Demofile.DemoFile();
-                
-                                        demoFile.on('start', () => {
-                                            let demoHeader = demoFile.header;
-                                            caseData.mapName = demoHeader.mapName;
-                                        });
+                    var caseData = {
+                        owMSG: undefined,
+                        suspectID: undefined,
+                        mapName: undefined,
+                        startTime: 0,
+                        endTime: 0
+                    }
 
-                                        demoFile.gameEvents.on('player_connect', getPlayerIndex);
-                                        demoFile.gameEvents.on('player_disconnect', getPlayerIndex);
-                                        demoFile.gameEvents.on('round_freeze_end', getPlayerIndex);
-                
-                                        function getPlayerIndex() {
-                                            playerIndex = demoFile.players.map(p => p.steamId === 'BOT' ? p.steamId : new SteamID(p.steamId).getSteamID64()).indexOf(sid.getSteamID64());
-                                        }
-                
-                                        demoFile.on('tickend', (curTick) => {
-                                            demoFile.emit('tickend__', { curTick: curTick, player: playerIndex });
-                                        });
-                
-                                        demoFile.on('progress', (progressFraction) => {
-                                            let prog = Math.round(progressFraction * 100);
-                                            if (prog % 10 !== 0) {
-                                                return;
-                                            }
-                
-                                            if (prog === lastProg) {
-                                                return;
-                                            }
-                
-                                            lastProg = prog;
-                                            //console.log(logTag + 'Parsing Demo: ' + prog + '%');
-                                        });
-                
-                                        demoFile.parse(buffer);
-                
-                                        demoFile.on('end', async (err) => {
-                                            caseData.endTime = Date.now();
-                                            if (err.error) {
-                                                console.error(err);
-                                            }
-                                            //console.log(logTag + 'Done Parsing Case: ' + caseUpdate.caseid + ' (Map: ' + caseData.mapName + ')');
-                
-                                            let reportAimbot = parseInt(Config.OverwatchVerdict.charAt(0)) || 0;
-                                            let reportWallhack = parseInt(Config.OverwatchVerdict.charAt(1)) || 0;
-                                            let reportOther = parseInt(Config.OverwatchVerdict.charAt(2)) || 0;
-                                            let reportGriefing = parseInt(Config.OverwatchVerdict.charAt(3)) || 0;
+                    //console.log(logTag + 'Starting Overwatch Cases...');
+                    async function resolveOverwatchCase() {
+                        //console.log(logTag + 'Requesting Overwatch Case...');
+                        steamClient.uploadRichPresence(730, {'steam_display': '#display_overwatch'});
 
-                                            let convictionObj = {};
-                                            let suspectSteamID = sid.getSteamID64();
-                                            if (Config.Whitelist && Config.Whitelist.includes(suspectSteamID)) {
-                                                //console.log(logTag + 'Account is whitelisted and will not be reported.');
-                                                sendMessage(`A whitelisted account was spotted in an overwatch case on ${caseData.mapName}!\nDemo: ${caseUpdate.caseurl}`);
-                                                convictionObj = {
-                                                    caseid: caseUpdate.caseid,
-                                                    suspectid: caseUpdate.suspectid,
-                                                    fractionid: caseUpdate.fractionid,
-                                                    rpt_aimbot: 0,
-                                                    rpt_wallhack: 0,
-                                                    rpt_speedhack: 0,
-                                                    rpt_teamharm: 0,
-                                                    reason: 3
-                                                };
-                                            } else {
-                                                convictionObj = {
-                                                    caseid: caseUpdate.caseid,
-                                                    suspectid: caseUpdate.suspectid,
-                                                    fractionid: caseUpdate.fractionid,
-                                                    rpt_aimbot: (reportAimbot == 1 || reportAimbot == 0 ? reportAimbot : 0),
-                                                    rpt_wallhack: (reportWallhack == 1 || reportWallhack == 0 ? reportWallhack : 0),
-                                                    rpt_speedhack: (reportOther == 1 || reportOther == 0 ? reportOther : 0),
-                                                    rpt_teamharm: (reportGriefing == 1 || reportGriefing == 0 ? reportGriefing : 0),
-                                                    reason: 3
-                                                };
-                                            }
+                        let caseUpdate = await csgoClients[steamClientIndex].sendMessage(
+                            730,
+                            csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                            {},
+                            csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                            {
+                                reason: 1
+                            },
+                            csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                            csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                            30000
+                        ).catch((err) => {
+                            console.error(err);
+                        });
 
-                                            MonitorDB.findOne({ steamid64: suspectSteamID }, (err, profile) => {
-                                                if (err) console.error(err);
-                                                if (profile) sendMessage(`A monitored account was spotted in an overwatch case on ${caseData.mapName}!\nDemo: ${caseUpdate.caseurl}`);
+                        if (caseUpdate.caseurl) {
+                            caseData.owMSG = caseUpdate;
+
+                            if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.dem')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.dem');
+                            //console.log(logTag + 'Downloading Case ' + caseUpdate.caseid + ' from: ' + caseUpdate.caseurl);
+                    
+                            let sid = SteamID.fromIndividualAccountID(caseUpdate.suspectid);
+                            if (!sid.isValid()) {
+                                //console.log(logTag + 'Got invalid Suspect ID: ' + caseUpdate.suspectid);
+                                resolveOverwatchCase();
+                                return;
+                            }
+                            caseData.suspectID = sid;
+                    
+                            let request = Request(caseUpdate.caseurl);
+                            request.on('error', (err) => {
+                                console.error(err);
+                            });
+                            
+                            request.on('response', (res) => {
+                                res.pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.bz2')).on('close', async () => {
+                                    //console.log(logTag + 'Finished downloading ' + caseUpdate.caseid + ', unpacking...');
+                    
+                                    await csgoClients[steamClientIndex].sendMessage(
+                                        730,
+                                        csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
+                                        {},
+                                        csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseStatus,
+                                        {
+                                            caseid: caseUpdate.caseid,
+                                            statusid: 1
+                                        },
+                                        undefined,
+                                        undefined,
+                                        30000
+                                    ).catch((err) => {
+                                        console.error(err);
+                                    });
+                    
+                                    FS.createReadStream('./demo/' + steamClient.steamID.toString() + '.bz2').pipe(BZ2()).pipe(FS.createWriteStream('./demo/' + steamClient.steamID.toString() + '.dem')).on('close', () => {
+                                        if (FS.existsSync('./demo/' + steamClient.steamID.toString() + '.bz2')) FS.unlinkSync('./demo/' + steamClient.steamID.toString() + '.bz2');
+
+                                        caseData.startTime = Date.now();
+                                        //console.log(logTag + 'Finished unpacking ' + caseUpdate.caseid + ', parsing as suspect ' + sid.getSteamID64() + '...');
+                    
+                                        FS.readFile('./demo/' + steamClient.steamID.toString() + '.dem', (err, buffer) => {
+                                            if (err) return console.error(err);
+                    
+                                            let lastProg = -1;
+                                            let playerIndex = -1;
+                                            const demoFile = new Demofile.DemoFile();
+                    
+                                            demoFile.on('start', () => {
+                                                let demoHeader = demoFile.header;
+                                                caseData.mapName = demoHeader.mapName;
                                             });
 
-                                            CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: suspectSteamID, mapName: caseData.mapName, downloadURL: caseUpdate.caseurl, timestamp: Date.now() }, (err) => {
-                                                if (err && err.errorType != 'uniqueViolated') {
+                                            demoFile.gameEvents.on('player_connect', getPlayerIndex);
+                                            demoFile.gameEvents.on('player_disconnect', getPlayerIndex);
+                                            demoFile.gameEvents.on('round_freeze_end', getPlayerIndex);
+                    
+                                            function getPlayerIndex() {
+                                                playerIndex = demoFile.players.map(p => p.steamId === 'BOT' ? p.steamId : new SteamID(p.steamId).getSteamID64()).indexOf(sid.getSteamID64());
+                                            }
+                    
+                                            demoFile.on('tickend', (curTick) => {
+                                                demoFile.emit('tickend__', { curTick: curTick, player: playerIndex });
+                                            });
+                    
+                                            demoFile.on('progress', (progressFraction) => {
+                                                let prog = Math.round(progressFraction * 100);
+                                                if (prog % 10 !== 0) {
+                                                    return;
+                                                }
+                    
+                                                if (prog === lastProg) {
+                                                    return;
+                                                }
+                    
+                                                lastProg = prog;
+                                                //console.log(logTag + 'Parsing Demo: ' + prog + '%');
+                                            });
+                    
+                                            demoFile.parse(buffer);
+                    
+                                            demoFile.on('end', async (err) => {
+                                                caseData.endTime = Date.now();
+                                                if (err.error) {
                                                     console.error(err);
                                                 }
-                                            });
-                                            
-                                            if ((caseData.endTime - caseData.startTime) < (240 * 1000)) {
-                                                let timer = parseInt((240 * 1000) - (caseData.endTime - caseData.startTime)) / 1000;
-                                                //console.log(logTag + 'Waiting ' + timer + ' second' + (timer === 1 ? '' : 's') + ' to avoid being ignored by the GC.');
-                                                await new Promise(request => setTimeout(request, (timer * 1000)));
-                                            }
+                                                //console.log(logTag + 'Done Parsing Case: ' + caseUpdate.caseid + ' (Map: ' + caseData.mapName + ')');
+                    
+                                                let reportAimbot = parseInt(Config.OverwatchVerdict.charAt(0)) || 0;
+                                                let reportWallhack = parseInt(Config.OverwatchVerdict.charAt(1)) || 0;
+                                                let reportOther = parseInt(Config.OverwatchVerdict.charAt(2)) || 0;
+                                                let reportGriefing = parseInt(Config.OverwatchVerdict.charAt(3)) || 0;
 
-                                            let caseUpdate2 = await csgoClients[steamClientIndex].sendMessage(
-                                                730,
-                                                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
-                                                {},
-                                                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
-                                                convictionObj,
-                                                csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
-                                                csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
-                                                30000
-                                            ).catch((err) => {
-                                                console.error(err);
+                                                let convictionObj = {};
+                                                let suspectSteamID = sid.getSteamID64();
+                                                if (Config.Whitelist && Config.Whitelist.includes(suspectSteamID)) {
+                                                    //console.log(logTag + 'Account is whitelisted and will not be reported.');
+                                                    sendMessage(`A whitelisted account was spotted in an overwatch case on ${caseData.mapName}!\nDemo: ${caseUpdate.caseurl}`);
+                                                    convictionObj = {
+                                                        caseid: caseUpdate.caseid,
+                                                        suspectid: caseUpdate.suspectid,
+                                                        fractionid: caseUpdate.fractionid,
+                                                        rpt_aimbot: 0,
+                                                        rpt_wallhack: 0,
+                                                        rpt_speedhack: 0,
+                                                        rpt_teamharm: 0,
+                                                        reason: 3
+                                                    };
+                                                } else {
+                                                    convictionObj = {
+                                                        caseid: caseUpdate.caseid,
+                                                        suspectid: caseUpdate.suspectid,
+                                                        fractionid: caseUpdate.fractionid,
+                                                        rpt_aimbot: (reportAimbot == 1 || reportAimbot == 0 ? reportAimbot : 0),
+                                                        rpt_wallhack: (reportWallhack == 1 || reportWallhack == 0 ? reportWallhack : 0),
+                                                        rpt_speedhack: (reportOther == 1 || reportOther == 0 ? reportOther : 0),
+                                                        rpt_teamharm: (reportGriefing == 1 || reportGriefing == 0 ? reportGriefing : 0),
+                                                        reason: 3
+                                                    };
+                                                }
+
+                                                MonitorDB.findOne({ steamid64: suspectSteamID }, (err, profile) => {
+                                                    if (err) console.error(err);
+                                                    if (profile) sendMessage(`A monitored account was spotted in an overwatch case on ${caseData.mapName}!\nDemo: ${caseUpdate.caseurl}`);
+                                                });
+
+                                                CaseDataDB.insert({ caseid: caseUpdate.caseid, fractionid: caseUpdate.fractionid, suspectid: caseUpdate.suspectid, steamid64: suspectSteamID, mapName: caseData.mapName, downloadURL: caseUpdate.caseurl, timestamp: Date.now() }, (err) => {
+                                                    if (err && err.errorType != 'uniqueViolated') {
+                                                        console.error(err);
+                                                    }
+                                                });
+                                                
+                                                if ((caseData.endTime - caseData.startTime) < (240 * 1000)) {
+                                                    let timer = parseInt((240 * 1000) - (caseData.endTime - caseData.startTime)) / 1000;
+                                                    //console.log(logTag + 'Waiting ' + timer + ' second' + (timer === 1 ? '' : 's') + ' to avoid being ignored by the GC.');
+                                                    await new Promise(request => setTimeout(request, (timer * 1000)));
+                                                }
+
+                                                let caseUpdate2 = await csgoClients[steamClientIndex].sendMessage(
+                                                    730,
+                                                    csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                                                    {},
+                                                    csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseUpdate,
+                                                    convictionObj,
+                                                    csgoClients[steamClientIndex].Protos.csgo.ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                                                    csgoClients[steamClientIndex].Protos.csgo.CMsgGCCStrike15_v2_PlayerOverwatchCaseAssignment,
+                                                    30000
+                                                ).catch((err) => {
+                                                    console.error(err);
+                                                });
+                    
+                                                if (caseUpdate2.caseurl) {
+                                                    //console.log(logTag + 'Unexpected Behaviour: Got a new Case but sent convcitionObj. Retrying in 30 seconds...');
+                                                    setTimeout(resolveOverwatchCase, (30 * 1000));
+                                                    return;
+                                                }
+                    
+                                                if (!caseUpdate2.caseid) {
+                                                    //console.log(logTag + 'Unexpected Behaviour: Got a cooldown despite sending completion. Retrying in 30 seconds...');
+                                                    setTimeout(resolveOverwatchCase, (30 * 1000));
+                                                    return;
+                                                }
+                    
+                                                setTimeout(resolveOverwatchCase, ((caseUpdate2.throttleseconds + 1) * 1000));
                                             });
-                
-                                            if (caseUpdate2.caseurl) {
-                                                //console.log(logTag + 'Unexpected Behaviour: Got a new Case but sent convcitionObj. Retrying in 30 seconds...');
-                                                setTimeout(resolveOverwatchCase, (30 * 1000));
-                                                return;
-                                            }
-                
-                                            if (!caseUpdate2.caseid) {
-                                                //console.log(logTag + 'Unexpected Behaviour: Got a cooldown despite sending completion. Retrying in 30 seconds...');
-                                                setTimeout(resolveOverwatchCase, (30 * 1000));
-                                                return;
-                                            }
-                
-                                            setTimeout(resolveOverwatchCase, ((caseUpdate2.throttleseconds + 1) * 1000));
                                         });
                                     });
                                 });
                             });
-                        });
-                    } else {
-                        if (!caseUpdate.caseid) {
-                            //console.log(logTag + 'We are still on cooldown... Waiting ' + (caseUpdate.throttleseconds + 1) + ' seconds...');
-                            setTimeout(resolveOverwatchCase, ((caseUpdate.throttleseconds + 1) * 1000));
-                            return;
+                        } else {
+                            if (!caseUpdate.caseid) {
+                                //console.log(logTag + 'We are still on cooldown... Waiting ' + (caseUpdate.throttleseconds + 1) + ' seconds...');
+                                setTimeout(resolveOverwatchCase, ((caseUpdate.throttleseconds + 1) * 1000));
+                                return;
+                            }
+                            //console.log(logTag + 'Unexpected Behaviour: Got a completion without sending one. Retrying in 30 seconds...');
+                            setTimeout(resolveOverwatchCase, (30 * 1000));
                         }
-                        //console.log(logTag + 'Unexpected Behaviour: Got a completion without sending one. Retrying in 30 seconds...');
-                        setTimeout(resolveOverwatchCase, (30 * 1000));
                     }
+                    resolveOverwatchCase();
+                } else {
+                    console.error(logTag + 'Unable to retrieve MM Rank.');
+                    steamClient.logOff();
                 }
-                resolveOverwatchCase();
             } else {
-                console.error(logTag + 'Unable to retrieve MM Rank.');
+                console.error(logTag + 'Failed to establish CSGO GameCoordinator Connection.');
                 steamClient.logOff();
             }
         });
