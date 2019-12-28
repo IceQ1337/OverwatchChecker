@@ -19,12 +19,12 @@ MonitorDB.ensureIndex({ fieldName: 'steamid64', unique: true }, (err) => {
 });
 
 if (Config == null) {
-    console.error('Missing config information. Exiting now.');
+    console.error('Config Information Missing. Killing Process.');
     process.exitCode = 1;
 }
 
 if (Accounts == null) {
-    console.error('Missing account information. Exiting now.');
+    console.error('Account Information Missing. Killing Process.');
     process.exitCode = 1;
 }
 
@@ -62,10 +62,10 @@ TelegramBot.on('message', (message) => {
                 resolveCustomURL(steamID).then((steamID64) => {
                     checkSteamProfile(steamID64, chatID);
                 }).catch(() => {
-                    sendMessage('An unexpected error occurred.', chatID);
+                    sendMessage('An error occurred while resolving the custom url.', chatID);
                 });
             } else {
-                sendMessage(`'${steamID}' is not a valid steam-profile.`, chatID);
+                sendMessage(`'${steamID}' is not a valid steam profile.`, chatID);
             }
         }
 
@@ -82,10 +82,10 @@ TelegramBot.on('message', (message) => {
                     resolveCustomURL(steamID).then((steamID64) => {
                         monitorSteamProfile(steamID64, chatID);
                     }).catch(() => {
-                        sendMessage('An unexpected error occurred.', chatID);
+                        sendMessage('An error occurred while resolving the custom url.', chatID);
                     });
                 } else {
-                    sendMessage(`'${steamID}' is not a valid steam-profile.`, chatID);
+                    sendMessage(`'${steamID}' is not a valid steam profile.`, chatID);
                 } 
             } else {
                 sendMessage('Permission Denied.', chatID);
@@ -148,7 +148,7 @@ function monitorSteamProfile(steamID64, chatID) {
             if (err.errorType == 'uniqueViolated') {
                 sendMessage(`${steamID64} is already being monitored.`, chatID);
             } else {
-                sendMessage(`An unexpected error occurred.`, chatID);
+                sendMessage(`An error occurred while inserting the account into the database.`, chatID);
             }
         } else {
             sendMessage(`${steamID64} will now be monitored.`, chatID);
@@ -258,7 +258,7 @@ checkProtobufs.then(() => {
             
                     //console.log(logTag + 'is ' + lang.Tokens['skillgroup_' + rank.rank_id] + ' with ' + rank.wins + ' win' + (rank.wins === 1 ? '' : 's'));
                     if (rank.rank_id < 7 || rank.wins < 150) {
-                        //console.log(logTag + (rank.rank_id < 7 ? ' MM Rank is too low' : 'Not have enough wins') + ' in order to request Overwatch cases. Need at least 150 wins and ' + lang.Tokens['skillgroup_7'] + '.');
+                        //console.log(logTag + (rank.rank_id < 7 ? ' MM Rank is too low' : 'Not enough wins') + ' in order to request Overwatch cases. Need at least 150 wins and ' + lang.Tokens['skillgroup_7'] + '.');
                         steamClient.logOff();
                         return;
                     }
@@ -476,11 +476,11 @@ checkProtobufs.then(() => {
                     }
                     resolveOverwatchCase();
                 } else {
-                    console.error(logTag + 'Unable to retrieve MM Rank.');
+                    //console.error(logTag + 'Failed to retrieve MM Rank.');
                     steamClient.logOff();
                 }
             } else {
-                console.error(logTag + 'Failed to establish CSGO GameCoordinator Connection.');
+                //console.error(logTag + 'Failed to establish CSGO GameCoordinator Connection.');
                 steamClient.logOff();
             }
         });
