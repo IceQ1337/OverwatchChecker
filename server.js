@@ -206,7 +206,10 @@ checkProtobufs.then(() => {
                 console.error(err);
             });
     
-            let lang = (await Helper.DownloadLanguage('csgo_english.txt')).lang;
+            let langObj = await Helper.DownloadLanguage('csgo_english.txt').catch((err) => {
+                console.error(err);
+            });
+            let lang = langObj.lang;
     
             let mmHello = await csgoClient.sendMessage(
                 730,
@@ -468,7 +471,7 @@ checkProtobufs.then(() => {
                 steamClient.logOff();
             }
         });
-    
+
         steamClient.on('error', (err) => {
             console.error(err);
         });
