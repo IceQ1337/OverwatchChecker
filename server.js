@@ -208,7 +208,7 @@ checkProtobufs.then(() => {
 
             var connectionEstablished = true;
             await csgoClients[steamClientIndex].start().catch((err) => {
-                console.error(err);
+                console.error(`${err}\n${logTag} Relogging in 5 Minutes.`);
                 connectionEstablished = false;
             });
     
@@ -259,6 +259,7 @@ checkProtobufs.then(() => {
                     //console.log(logTag + 'is ' + lang.Tokens['skillgroup_' + rank.rank_id] + ' with ' + rank.wins + ' win' + (rank.wins === 1 ? '' : 's'));
                     if (rank.rank_id < 7 || rank.wins < 150) {
                         //console.log(logTag + (rank.rank_id < 7 ? ' MM Rank is too low' : 'Not enough wins') + ' in order to request Overwatch cases. Need at least 150 wins and ' + lang.Tokens['skillgroup_7'] + '.');
+                        console.log(logTag + 'MM Rank too low or not enough wins. Logging off permanently.');
                         steamClient.logOff();
                         return;
                     }
@@ -446,19 +447,18 @@ checkProtobufs.then(() => {
                                                     console.error(err);
                                                 });
                     
-                                                if (caseUpdate2.caseurl) {
-                                                    //console.log(logTag + 'Unexpected Behaviour: Got a new Case but sent convcitionObj. Retrying in 30 seconds...');
+                                                if (caseUpdate2) {
+                                                    if (caseUpdate2.caseurl || !caseUpdate2.caseid) {
+                                                        //console.log(logTag + 'Unexpected Behaviour: Got a new Case but sent convcitionObj.');
+                                                        //console.log(logTag + 'Unexpected Behaviour: Got a cooldown despite sending completion.');
+                                                        //setTimeout(resolveOverwatchCase, (30 * 1000));
+                                                        setTimeout(resolveOverwatchCase, ((caseUpdate2.throttleseconds + 1) * 1000));
+                                                        return;
+                                                    }
+                                                } else {
+                                                    // Retrying in 30 seconds.
                                                     setTimeout(resolveOverwatchCase, (30 * 1000));
-                                                    return;
                                                 }
-                    
-                                                if (!caseUpdate2.caseid) {
-                                                    //console.log(logTag + 'Unexpected Behaviour: Got a cooldown despite sending completion. Retrying in 30 seconds...');
-                                                    setTimeout(resolveOverwatchCase, (30 * 1000));
-                                                    return;
-                                                }
-                    
-                                                setTimeout(resolveOverwatchCase, ((caseUpdate2.throttleseconds + 1) * 1000));
                                             });
                                         });
                                     });
@@ -476,12 +476,26 @@ checkProtobufs.then(() => {
                     }
                     resolveOverwatchCase();
                 } else {
-                    //console.error(logTag + 'Failed to retrieve MM Rank.');
+                    console.error(logTag + 'Failed to retrieve MM Rank. Logging off permanently.');
                     steamClient.logOff();
                 }
             } else {
                 //console.error(logTag + 'Failed to establish CSGO GameCoordinator Connection.');
                 steamClient.logOff();
+
+                setTimeout(() => {
+                    var logonSettings = {};
+                    Accounts.forEach((account, accountIndex) => {
+                        if (accountIndex == steamClientIndex) {
+                            logonSettings = { accountName: account.username, password: account.password };
+                            if (account.sharedSecret && account.sharedSecret.length > 5) {
+                                logonSettings.twoFactorCode = SteamTOTP.getAuthCode(account.sharedSecret);
+                            }
+                        }
+                    });
+                    //steamClients[steamClientIndex].logOn(logonSettings);
+                    steamClient.logOn(logonSettings);
+                }, 300000);
             }
         });
 
