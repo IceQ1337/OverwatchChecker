@@ -63,7 +63,8 @@ module.exports = class GameCoordinator extends Events {
 					this.startPromise = null;
 				}
 
-				reject(new Error('GC Connection Timeout'));
+				//reject(new Error('GC Connection Timeout'));
+				reject('GC Connection Timeout');
 			}, timeout);
 
 			this._GCHelloInterval = setInterval(() => {
@@ -151,7 +152,8 @@ module.exports = class GameCoordinator extends Events {
 
 			let sendTimeout = setTimeout(() => {
 				this.removeListener('allMsg', sendMessageResponse);
-				reject(new Error('Failed To Send Message: Timeout'));
+				//reject(new Error('Failed To Send Message: Timeout'));
+				reject('Failed To Send Message: Timeout');
 			}, timeout);
 
 			this.on('allMsg', sendMessageResponse);
