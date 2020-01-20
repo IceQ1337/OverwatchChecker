@@ -1,4 +1,4 @@
-# Overwatch Checker (Proof of Concept)
+# Overwatch Checker v2 (Proof of Concept)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/uses-js.svg)](https://forthebadge.com)  
 A simple Node.js script that lets you check if a steam-profile is in Overwatch via Telegram Bot.
@@ -7,7 +7,7 @@ A simple Node.js script that lets you check if a steam-profile is in Overwatch v
 This script is a realization of an idea in order to demonstrate its feasibility and to verify that this concept has practical potential. To make this script functional on a large scale, you would need to have an almost infinite number of accounts.
 
 ## How It Works
-The script utilizes the specified accounts to download and resolve Overwatch Cases in order to obtain information about the suspect, which is then stored in a database. This process is repeated by the accounts as often as possible to collect as much data as possible. When a user checks an account, the script will check if the account has an entry in the database. Since it may be that an account doesn't get banned by Overwatch, this script considers only cases within the last `EstimatedOverwatchPeriod` hours as active cases. Always remember that this is a proof of concept and would require millions of accounts to work properly.
+The script utilizes the specified accounts to request and automatically complete Overwatch cases in order to obtain information about the suspect, which is then stored in a database. This process is repeated by the accounts as often as possible to collect as much data as possible. When a user checks a profile, the script will check if the profile has an entry in the database. Since it may be that a profile doesn't get banned by Overwatch, this script considers only cases within the last `overwatchPeriod` hours as active cases. Always remember that this is a proof of concept and would require thousands of accounts to work properly.
 
 ## Why should I check if someone has an active Overwatch Case?
 Honestly? I dont know. I came across a miserable and private implementation of this idea and thought I could implement a better prototype that is suitable as an open-source proof of concept.  
@@ -24,15 +24,15 @@ In order to use this bot, you need the following dependencies and tokens:
 ## Installation
 - Make sure you have the latest version of [Node.js](https://nodejs.org/) installed.
 - Download this repository as a ZIP file and unpack it wherever you like.
-- Go into the `data` folder and rename `config.json.example` to `config.json`
+- Go into the `configs` folder and rename `config.json.example` to `config.json`
 - Edit `config.json` and customize it as you like.
-- Go into the `data` folder and rename `accounts.json.example` to `accounts.json`
+- Go into the `configs` folder and rename `accounts.json.example` to `accounts.json`
 - Edit `accounts.json` and enter your account credentials. You can add multiple accounts.
 - Type `npm install` into your console of choice to install Node.js dependencies
-- Type `npm start` or `node server.js` to start the bot.
+- Type `npm start` or `node index.js` to start the bot.
   - To find out how to run the script permanently on a server you should check out [forever](https://github.com/foreversd/forever)  
   
-**The script does not properly check if your config is valid or has missing information.**  
+**The script does not check if your config is valid or has missing information.**  
 **Make sure you have everything set up properly!**  
 
 ## Updating
@@ -41,26 +41,25 @@ If the file structure changes during an update, a local installation must be man
 In most cases, files only have to be moved or renamed.
 
 ## Configuration
-```Javascript
+```json
 {
-	"TelegramBotToken": "Telegram Bot Token", // Your Telegram Bot Token
-	"TelegramMasterChatID": "Telegram Chat ID", // Your Telegram Chat ID
-	"EstimatedOverwatchPeriod": "48", // Explanation Below
-	"OverwatchVerdict": "2211", // Explanation Below
-	"Whitelist": [] // Accounts you don't want to report
+	"telegramBotToken": "Telegram Bot Token", // Your Telegram Bot Token
+	"telegramMasterChatID": "Telegram Chat ID", // Your Telegram Chat ID
+	"overwatchPeriod": "72", // Explanation Below
+	"overwatchVerdict": "2211", // Explanation Below
+	"whitelist": [] // Accounts you don't want to report
 }
 ```
 
 ## Usage
-### Check Profiles
+### Check Profiles (NOT YET AVAILABLE IN V2)
 - Use `/check <steamID64|profileURL>` to check if your database contains information about a profile.
   - Examples:
     - `/check 12345678912345678`
 	- `/check http://steamcommunity.com/profiles/12345678912345678`
-    - `/check https://steamcommunity.com/id/customURL`  
 
-### Monitor Profiles
-- Use `/monitor <steamID64|profileURL>` to monitor a profile.  
+### Put profiles on a watchlist
+- Use `/watch <steamID64|profileURL>` to monitor a profile.  
 This will inform you as soon as the profile is the suspect of an overwatch case.
 
 To get the steamID64 or URL of a profile you can use websites like [STEAMID I/O](https://steamid.io/).  
@@ -81,21 +80,12 @@ In order to contribute to the project, please follow the **GitHub Standard Fork 
 - Submit a **Pull Request** so I can review your changes
 
 ## Used Node.js Modules
-- [NeDB](https://github.com/louischatriot/nedb)
-- [Request](https://github.com/request/request)
-- [Node.js Telegram Bot API](https://github.com/mast/telegram-bot-api)
-- [XML2JS](https://github.com/Leonidas-from-XIV/node-xml2js)
 - [Steam-User](https://github.com/DoctorMcKay/node-steam-user)
-- [SteamID](https://github.com/DoctorMcKay/node-steamid)
 - [Steam-TOTP](https://github.com/DoctorMcKay/node-steam-totp)
-- [protobuf.js](https://github.com/protobufjs/protobuf.js)
-- [VDF](https://github.com/RJacksonm1/node-vdf)
-- [Demofile](https://github.com/saul/demofile)
-- [unzipper](https://github.com/ZJONSSON/node-unzipper)
-- [unbzip2-stream](https://github.com/regular/unbzip2-stream)
-- [ByteBuffer](https://github.com/protobufjs/bytebuffer.js)
-
-**Thanks to [BeepFelix](https://github.com/BeepFelix) for his [BeepFelix@CSGO-Overwatch-Bot](https://github.com/BeepFelix/CSGO-Overwatch-Bot). I have re-used a decent amount of code from it.**
+- [SteamID](https://github.com/DoctorMcKay/node-steamid)
+- [GlobalOffensive](https://github.com/DoctorMcKay/node-globaloffensive)
+- [Node.js Telegram Bot API](https://github.com/mast/telegram-bot-api)
+- [NeDB](https://github.com/louischatriot/nedb)
 
 ## Donating
 If you find this script useful, you can support me by donating items via steam.  

@@ -1,0 +1,7 @@
+{
+	"telegramBotToken": "",
+	"telegramMasterChatID": "",
+	"overwatchPeriod": "72",
+	"overwatchVerdict": "1100",
+	"whitelist": []
+}
