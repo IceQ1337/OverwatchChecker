@@ -41,7 +41,7 @@ If the file structure changes during an update, a local installation must be man
 In most cases, files only have to be moved or renamed.
 
 ## Configuration
-```json
+```javascript
 {
 	"telegramBotToken": "Telegram Bot Token", // Your Telegram Bot Token
 	"telegramMasterChatID": "Telegram Chat ID", // Your Telegram Chat ID
