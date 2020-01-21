@@ -45,7 +45,7 @@ In most cases, files only have to be moved or renamed.
 {
 	"telegramBotToken": "Telegram Bot Token", // Your Telegram Bot Token
 	"telegramMasterChatID": "Telegram Chat ID", // Your Telegram Chat ID
-	"overwatchPeriod": "72", // Time period in which an overwatch case is considered recent (in hours)
+	"overwatchPeriod": "72", // Time period in which an overwatch case is considered active (in hours)
 	"overwatchVerdict": "0000", // 0 = Not enough evidence, 1 = Evidence beyond a reasonable doubt
 	"whitelist": [] // Accounts you don't want to report
 }
