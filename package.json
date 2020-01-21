@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/IceQ1337/OverwatchChecker#readme",
   "dependencies": {
-    "globaloffensive": "https://github.com/IceQ1337/node-globaloffensive.git",
+    "globaloffensive": "github:IceQ1337/node-globaloffensive#master",
     "nedb": "^1.8.0",
     "steam-totp": "^2.1.1",
     "steam-user": "^4.12.5",
