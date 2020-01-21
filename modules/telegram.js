@@ -34,18 +34,19 @@ module.exports = function(Global) {
     this.telegramBot.on('message', function(message) {
         const chatID = message.from.id;
         const msg = message.text;
+        const sendMsg = this.sendMsg;
 
         if (msg && chatID == this.masterID) {
             if (msg.startsWith('/watch')) {
                 var argument = msg.replace('/watch ', '');
                 this.getValidSteamID(argument).then(function(steamID) {
                     Global.NeDB.addToWatchlist(steamID).then(function() {
-                        this.sendMsg('The profile was successfully added to the watchlist.');
+                        sendMsg('The profile was successfully added to the watchlist.');
                     }).catch(function() {
-                        this.sendMsg('Unable to add the profile to the watchlist because of an error.');
+                        sendMsg('Unable to add the profile to the watchlist because of an error.');
                     });
                 }).catch(function() {
-                    this.sendMsg('Invalid Argument.\nUsage: /watch <steamID64|profileURL>');
+                    sendMsg('Invalid Argument.\nUsage: /watch <steamID64|profileURL>');
                 });
             }
         }
