@@ -47,7 +47,7 @@ In order to use this bot, you need the following dependencies and tokens:
 ```
 
 ## Usage
-### Check Profiles (NOT YET AVAILABLE IN V2)
+### Check Profiles
 - Use `/check <steamID64|profileURL>` to check if your database contains information about a profile.
   - Examples:
     - `/check 12345678912345678`
