@@ -4,8 +4,8 @@
   "description": "A simple Node.js script that lets you check if a steam-profile is in overwatch via Telegram bot.",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon server.js",
-    "start": "node server.js"
+    "test": "nodemon index.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
