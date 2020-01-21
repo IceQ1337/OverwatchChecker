@@ -65,4 +65,25 @@ module.exports = function() {
             return false;
         });
     };
+
+    this.checkProfile = function(steamID64) {
+        const database = this.db;
+        const db_keys = Object.keys(database);
+        return new Promise(function(resolve, reject) {
+            for (const db_key of db_keys) {
+                database[db_key].find({ steamid64: steamID64.toString() }, function(err, cases) {
+                    if (err) {
+                        console.error(`[${new Date().toUTCString()}] NEDB (checkProfile) > ${err}`);
+                        reject();
+                    }
+
+                    if (cases && cases.length > 0) {
+                        resolve(cases);
+                    } else {
+                        resolve();
+                    }
+                });
+            }
+        });
+    }.bind(this);
 }

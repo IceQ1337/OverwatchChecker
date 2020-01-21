@@ -43,10 +43,31 @@ module.exports = function(Global) {
                     Global.NeDB.addToWatchlist(steamID).then(function() {
                         sendMsg('The profile was successfully added to the watchlist.');
                     }).catch(function() {
-                        sendMsg('Unable to add the profile to the watchlist because of an error.');
+                        sendMsg('An error occurred or the profile is already in the watchlist.');
                     });
                 }).catch(function() {
                     sendMsg('Invalid Argument.\nUsage: /watch <steamID64|profileURL>');
+                });
+            } else if (msg.startsWith('/check')) {
+                var argument = msg.replace('/check ', '');
+                this.getValidSteamID(argument).then(function(steamID) {
+                    Global.NeDB.checkProfile(steamID).then(function(cases) {
+                        if (cases) {
+                            var recentCases = 0;
+                            cases.forEach(function(_case) {
+                                if ((Date.now() - _case.timestamp) > (60 * 60 * (parseInt(Global.Config.overwatchPeriod) || 72))) {
+                                    recentCases++;
+                                }
+                            });
+                            sendMsg(`Total Cases: ${totalCases.length} | Recent Cases: ${recentCases}`);
+                        } else {
+                            sendMsg('This profile is not in our overwatch database.');
+                        }
+                    }).catch(function() {
+                        sendMsg('Unable to check the profile because of an error.');
+                    });
+                }).catch(function() {
+                    sendMsg('Invalid Argument.\nUsage: /check <steamID64|profileURL>');
                 });
             }
         }
