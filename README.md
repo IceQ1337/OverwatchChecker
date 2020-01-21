@@ -35,11 +35,6 @@ In order to use this bot, you need the following dependencies and tokens:
 **The script does not check if your config is valid or has missing information.**  
 **Make sure you have everything set up properly!**  
 
-## Updating
-### This project has no guaranteed backward compatibility!
-If the file structure changes during an update, a local installation must be manually adjusted.  
-In most cases, files only have to be moved or renamed.
-
 ## Configuration
 ```javascript
 {
@@ -50,6 +45,11 @@ In most cases, files only have to be moved or renamed.
 	"whitelist": [] // Accounts you don't want to report
 }
 ```
+
+## Updating
+### This project has no guaranteed backward compatibility!
+If the file structure changes during an update, a local installation must be manually adjusted.  
+In most cases, files only have to be moved or renamed.
 
 ## Usage
 ### Check Profiles (NOT YET AVAILABLE IN V2)
