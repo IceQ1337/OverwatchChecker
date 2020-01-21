@@ -46,11 +46,6 @@ In order to use this bot, you need the following dependencies and tokens:
 }
 ```
 
-## Updating
-### This project has no guaranteed backward compatibility!
-If the file structure changes during an update, a local installation must be manually adjusted.  
-In most cases, files only have to be moved or renamed.
-
 ## Usage
 ### Check Profiles (NOT YET AVAILABLE IN V2)
 - Use `/check <steamID64|profileURL>` to check if your database contains information about a profile.
@@ -63,6 +58,11 @@ In most cases, files only have to be moved or renamed.
 This will inform you as soon as the profile is the suspect of an overwatch case.
 
 To get the steamID64 or URL of a profile you can use websites like [STEAMID I/O](https://steamid.io/).  
+
+## Updating
+### This project has no guaranteed backward compatibility!
+If the file structure changes during an update, a local installation must be manually adjusted.  
+In most cases, files only have to be moved or renamed.
 
 ## Retrieve your Telegram Chat ID
 In order to retrieve your unique Telegram Chat ID, do as follows:
