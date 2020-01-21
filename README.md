@@ -58,7 +58,7 @@ In most cases, files only have to be moved or renamed.
     - `/check 12345678912345678`
 	- `/check http://steamcommunity.com/profiles/12345678912345678`
 
-### Put profiles on a watchlist
+### Put Profiles on a Watchlist
 - Use `/watch <steamID64|profileURL>` to monitor a profile.  
 This will inform you as soon as the profile is the suspect of an overwatch case.
 
