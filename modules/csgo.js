@@ -8,6 +8,13 @@ module.exports = function(steamUser, Global) {
     this.playersProfile = -1;
     this.lastCaseID = -1;
 
+    this.hasOverwatchAccess = function(profile) {
+        if (profile.vac_banned || profile.penalty_seconds > 0 || profile.ranking.rank_id < 7 || profile.ranking.wins < 150) {
+            return false;
+        }
+        return true;
+    }.bind(this);
+
     this.csgoClient.on('debug', function(info) {
         //console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > ${info}`);
     }.bind(this));
@@ -23,20 +30,22 @@ module.exports = function(steamUser, Global) {
 
     this.csgoClient.on('playersProfile', function(profile) {
         this.playersProfile = profile;
-        if (this.hasOverwatchAccess(this.playersProfile) && this.csgoClient.haveGCSession) {
-            this.csgoClient.requestOverwatchCaseUpdate();
-        } else {
+
+        if (!this.hasOverwatchAccess(this.playersProfile)) {
             console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No Access. Going offline.`);
             this.steamUser.logOff();
+            return;
+        } 
+        
+        if (this.csgoClient.haveGCSession) {
+            this.csgoClient.requestOverwatchCaseUpdate();
+        } else {
+            console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
+            setTimeout(function() {
+                this.csgoClient.requestPlayersProfile(this.steamUser.steamID);
+            }, 1000 * 30);
         }
     }.bind(this));
-
-    this.hasOverwatchAccess = function(profile) {
-        if (profile.vac_banned || profile.penalty_seconds > 0 || profile.ranking.rank_id < 7 || profile.ranking.wins < 150) {
-            return false;
-        }
-        return true;
-    }.bind(this);
 
     this.csgoClient.on('overwatchAssignment', function(assignment) {
         if (assignment) {
