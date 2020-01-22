@@ -17,6 +17,7 @@ However, on a large scale this could be very useful. You could check a current o
 ## Requirements
 In order to use this bot, you need the following dependencies and tokens:
 - Node.js
+- Git (Needed to install a dependency from GitHub)
 - At least 1 Steam-Account with access to Overwatch Cases.
 - Telegram Bot Token: https://core.telegram.org/bots#6-botfather
 - Telegram Chat ID: [Retrieve your Telegram Chat ID](#retrieve-your-telegram-chat-id)
