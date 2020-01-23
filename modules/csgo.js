@@ -66,15 +66,16 @@ module.exports = function(steamUser, Global) {
                     this.csgoClient.sendOverwatchCaseStatus(assignment.caseid, 1);
     
                     var accountWhitelisted = false;
+                    var escapedCaseURL = assignment.caseurl.replace('_', '\\_');
                     if (Global.Config.whitelist && Global.Config.whitelist.includes(steamID64)) {
                         accountWhitelisted = true;
                         console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Suspect in Whitelist: ${steamID64}`);
-                        Global.Telegram.sendMsg(`Overwatch Suspect in **Whitelist**!\nAccount: ${this.steamUser.steamID}\nSuspect: ${steamID64}\nDemo: ${assignment.caseurl}`);
+                        Global.Telegram.sendMsg(`Overwatch Suspect in **Whitelist**!\nAccount: ${this.steamUser.steamID}\nSuspect: ${steamID64}\nDemo: ${escapedCaseURL}`);
                     }
 
                     if (Global.NeDB.searchWatchlist(steamID64)) {
                         console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Suspect in Watchlist: ${steamID64}`);
-                        Global.Telegram.sendMsg(`Overwatch Suspect in **Watchlist**!\nAccount: ${this.steamUser.steamID}\nSuspect: ${steamID64}\nDemo: ${assignment.caseurl}`);                       
+                        Global.Telegram.sendMsg(`Overwatch Suspect in **Watchlist**!\nAccount: ${this.steamUser.steamID}\nSuspect: ${steamID64}\nDemo: ${escapedCaseURL}`);                       
                     }
     
                     console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Completing Overwatch Case: ${assignment.caseid}`);
