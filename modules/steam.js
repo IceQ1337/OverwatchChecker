@@ -11,6 +11,8 @@ module.exports = function(steamAccount, steamAccountIndex, Global) {
         var logonOptions = { accountName: this.steamAccount.username, password: this.steamAccount.password };
         if (this.steamAccount.sharedSecret) {
             logonOptions.twoFactorCode = SteamTOTP.getAuthCode(this.steamAccount.sharedSecret);
+        } else if (this.steamAccount.authCode) {
+            logonOptions.authCode = this.steamAccount.authCode;
         }
         console.log(`[${new Date().toUTCString()}] STEAM (${this.steamAccount.username}) > Logging in to Steam.`);
         this.steamUser.logOn(logonOptions);
