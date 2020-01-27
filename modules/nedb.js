@@ -10,16 +10,16 @@ Watchlist.ensureIndex({ fieldName: 'steamid64', unique: true }, (err) => {
 module.exports = function() {
     this.db = {};
 
-    this.createDB = function(accountID) {
+    this.createDB = (accountID) => {
         this.db[accountID] = new Datastore({ filename: './datastore/' + accountID + '.db', autoload: true });
         this.db[accountID].ensureIndex({ fieldName: 'caseid', unique: true }, (err) => {
             if (err) {
                 console.error(`[${new Date().toUTCString()}] NEDB (createDB) > ${err}`);
             }
         });
-    }.bind(this);
+    };
 
-    this.saveOverwatchCase = function(accountID, assignment, steamID64) {
+    this.saveOverwatchCase = (accountID, assignment, steamID64) => {
         if (this.db[accountID]) {
             var saveData = {
                 caseid: assignment.caseid,
@@ -29,7 +29,7 @@ module.exports = function() {
                 downloadURL: assignment.caseurl,
                 timestamp: Date.now()
             };
-            this.db[accountID].insert(saveData, function(err) {
+            this.db[accountID].insert(saveData, (err) => {
                 if (err && err.errorType != 'uniqueViolated') {
                     console.error(`[${new Date().toUTCString()}] NEDB (saveOverwatchCase) > ${err}`);
                 }
@@ -37,11 +37,11 @@ module.exports = function() {
         } else {
             console.error(`[${new Date().toUTCString()}] NEDB (saveOverwatchCase) > Database does not exist for ${accountID}`);
         }
-    }.bind(this);
+    };
 
-    this.addToWatchlist = function(steamID64) {
-        return new Promise(function(resolve, reject) {
-            Watchlist.insert({ steamid64: steamID64 }, function(err) {
+    this.addToWatchlist = (steamID64) => {
+        return new Promise((resolve, reject) => {
+            Watchlist.insert({ steamid64: steamID64 }, (err) => {
                 if (err) {
                     console.error(`[${new Date().toUTCString()}] NEDB (addToWatchlist) > ${err}`);
                     reject();
@@ -52,8 +52,8 @@ module.exports = function() {
         });
     };
 
-    this.searchWatchlist = function(steamID64) {
-        Watchlist.findOne({ steamid64: steamID64.toString() }, function(err, profile) {
+    this.searchWatchlist = (steamID64) => {
+        Watchlist.findOne({ steamid64: steamID64.toString() }, (err, profile) => {
             if (err) {
                 console.error(`[${new Date().toUTCString()}] NEDB (searchWatchlist) > ${err}`);
                 return false;
@@ -66,12 +66,12 @@ module.exports = function() {
         });
     };
 
-    this.checkProfile = function(steamID64) {
+    this.checkProfile = (steamID64) => {
         const database = this.db;
         const db_keys = Object.keys(database);
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             for (const db_key of db_keys) {
-                database[db_key].find({ steamid64: steamID64.toString() }, function(err, cases) {
+                database[db_key].find({ steamid64: steamID64.toString() }, (err, cases) => {
                     if (err) {
                         console.error(`[${new Date().toUTCString()}] NEDB (checkProfile) > ${err}`);
                         reject();
@@ -85,5 +85,5 @@ module.exports = function() {
                 });
             }
         });
-    }.bind(this);
+    };
 }

@@ -8,27 +8,27 @@ module.exports = function(steamUser, Global) {
     this.playersProfile = -1;
     this.lastCaseID = -1;
 
-    this.hasOverwatchAccess = function(profile) {
+    this.hasOverwatchAccess = (profile) => {
         if (profile.vac_banned || profile.penalty_seconds > 0 || profile.ranking.rank_id < 7 || profile.ranking.wins < 150) {
             return false;
         }
         return true;
-    }.bind(this);
+    };
 
-    this.csgoClient.on('debug', function(info) {
+    this.csgoClient.on('debug', (info) => {
         //console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > ${info}`);
-    }.bind(this));
+    });
 
-    this.csgoClient.on('connectedToGC', function() {
+    this.csgoClient.on('connectedToGC', () => {
         this.connectedToGC = true;
         this.csgoClient.requestPlayersProfile(this.steamUser.steamID);
-    }.bind(this));
+    });
 
-    this.csgoClient.on('disconnectedFromGC', function(reason) {
+    this.csgoClient.on('disconnectedFromGC', (reason) => {
         this.connectedToGC = false;
-    }.bind(this));
+    });
 
-    this.csgoClient.on('playersProfile', function(profile) {
+    this.csgoClient.on('playersProfile', (profile) => {
         this.playersProfile = profile;
 
         if (!this.hasOverwatchAccess(this.playersProfile)) {
@@ -41,13 +41,11 @@ module.exports = function(steamUser, Global) {
             this.csgoClient.requestOverwatchCaseUpdate();
         } else {
             console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
-            setTimeout(function() {
-                this.csgoClient.requestPlayersProfile(this.steamUser.steamID);
-            }, 1000 * 30);
+            setTimeout(() => { this.csgoClient.requestPlayersProfile(this.steamUser.steamID); }, 1000 * 30);
         }
-    }.bind(this));
+    });
 
-    this.csgoClient.on('overwatchAssignment', function(assignment) {
+    this.csgoClient.on('overwatchAssignment', (assignment) => {
         if (assignment) {
             if (!assignment.caseid) {
                 console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Overwatch Cooldown. Retrying in 5 minutes.`);
@@ -102,5 +100,5 @@ module.exports = function(steamUser, Global) {
             console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Received Unexpected Assignment Response. Wating in 1 minute.`);
             setTimeout(this.csgoClient.requestOverwatchCaseUpdate, 60 * 1000);
         }
-    }.bind(this));
+    });
 }
