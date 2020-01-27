@@ -1,6 +1,6 @@
 {
   "name": "csgo-overwatch-checker",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A simple Node.js script that lets you check if a steam-profile is in overwatch via Telegram bot.",
   "main": "index.js",
   "scripts": {
