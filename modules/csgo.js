@@ -15,6 +15,15 @@ module.exports = function(steamUser, Global) {
         return true;
     };
 
+    this.requestOverwatchCaseUpdate = (caseupdate) => {
+        if (this.csgoClient.haveGCSession) {
+            this.csgoClient.requestOverwatchCaseUpdate(caseupdate || { reason: 1 });
+        } else {
+            console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
+            setTimeout(() => { this.requestOverwatchCaseUpdate(caseupdate); }, 1000 * 30);
+        }
+    };
+
     this.csgoClient.on('debug', (info) => {
         //console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > ${info}`);
     });
@@ -37,19 +46,14 @@ module.exports = function(steamUser, Global) {
             return;
         } 
         
-        if (this.csgoClient.haveGCSession) {
-            this.csgoClient.requestOverwatchCaseUpdate();
-        } else {
-            console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
-            setTimeout(() => { this.csgoClient.requestPlayersProfile(this.steamUser.steamID); }, 1000 * 30);
-        }
+        this.requestOverwatchCaseUpdate();
     });
 
     this.csgoClient.on('overwatchAssignment', (assignment) => {
         if (assignment) {
             if (!assignment.caseid) {
                 console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Overwatch Cooldown. Retrying in 5 minutes.`);
-                setTimeout(this.csgoClient.requestOverwatchCaseUpdate, (60 * 1000) * 5);
+                setTimeout(this.requestOverwatchCaseUpdate, (60 * 1000) * 5);
                 return;
             }
 
@@ -59,7 +63,7 @@ module.exports = function(steamUser, Global) {
                 var steamID64 = SteamID.fromIndividualAccountID(assignment.suspectid);
                 if (!steamID64.isValid()) {
                     console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Invalid Suspect ID. Retrying in 1 minute.`);
-                    setTimeout(this.csgoClient.requestOverwatchCaseUpdate, 60 * 1000);
+                    setTimeout(this.requestOverwatchCaseUpdate, 60 * 1000);
                 } else {
                     this.csgoClient.sendOverwatchCaseStatus(assignment.caseid, 1);
     
@@ -79,7 +83,7 @@ module.exports = function(steamUser, Global) {
                     }
     
                     console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Completing Overwatch Case: ${assignment.caseid}`);
-                    this.csgoClient.requestOverwatchCaseUpdate({
+                    this.requestOverwatchCaseUpdate({
                         caseid: assignment.caseid,
                         suspectid: assignment.suspectid,
                         fractionid: assignment.fractionid,
@@ -94,11 +98,11 @@ module.exports = function(steamUser, Global) {
                 }
             } else {
                 console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Received Confirmation Response. Wating 1 minute.`);
-                setTimeout(this.csgoClient.requestOverwatchCaseUpdate, 60 * 1000);
+                setTimeout(this.requestOverwatchCaseUpdate, 60 * 1000);
             }
         } else {
             console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Received Unexpected Assignment Response. Wating in 1 minute.`);
-            setTimeout(this.csgoClient.requestOverwatchCaseUpdate, 60 * 1000);
+            setTimeout(this.requestOverwatchCaseUpdate, 60 * 1000);
         }
     });
 }
