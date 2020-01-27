@@ -5,7 +5,7 @@ module.exports = function(Global) {
     this.masterID = Global.Config.telegramMasterChatID;
     this.telegramBot = new TelegramAPI({ token: Global.Config.telegramBotToken, updates: { enabled: true, get_interval: 2000 } });
 
-    this.sendMsg = function(msg, chatID = this.masterID) {
+    this.sendMsg = (msg, chatID = this.masterID) => {
         this.telegramBot.sendMessage({
             chat_id: chatID,
             text: msg,
@@ -13,10 +13,10 @@ module.exports = function(Global) {
         }).catch((err) => {
             console.error(new Error(`[${new Date().toUTCString()}] TELEGRAM (sendMsg) > ${err}`));
         });    
-    }.bind(this);
+    };
 
-    this.getValidSteamID = function(steamID64) {
-        return new Promise(function(resolve, reject) {
+    this.getValidSteamID = (steamID64) => {
+        return new Promise((resolve, reject) => {
             if (steamID64.match(/^((http|https):\/\/(www\.)?steamcommunity.com\/profiles\/([0-9]{17}))|([0-9]{17})$/)) {
                 var steamID = steamID64.match(/[0-9]{17}/gi)[0];
                 var realID = new SteamID(steamID);
@@ -31,7 +31,7 @@ module.exports = function(Global) {
         });
     }
 
-    this.telegramBot.on('message', function(message) {
+    this.telegramBot.on('message', (message) => {
         const chatID = message.from.id;
         const msg = message.text;
         const sendMsg = this.sendMsg;
@@ -39,22 +39,22 @@ module.exports = function(Global) {
         if (msg && chatID == this.masterID) {
             if (msg.startsWith('/watch')) {
                 var argument = msg.replace('/watch ', '');
-                this.getValidSteamID(argument).then(function(steamID) {
-                    Global.NeDB.addToWatchlist(steamID).then(function() {
+                this.getValidSteamID(argument).then((steamID) => {
+                    Global.NeDB.addToWatchlist(steamID).then(() => {
                         sendMsg('The profile was successfully added to the watchlist.');
-                    }).catch(function() {
+                    }).catch(() => {
                         sendMsg('An error occurred or the profile is already in the watchlist.');
                     });
-                }).catch(function() {
+                }).catch(() => {
                     sendMsg('Invalid Argument.\nUsage: /watch <steamID64|profileURL>');
                 });
             } else if (msg.startsWith('/check')) {
                 var argument = msg.replace('/check ', '');
-                this.getValidSteamID(argument).then(function(steamID) {
-                    Global.NeDB.checkProfile(steamID).then(function(cases) {
+                this.getValidSteamID(argument).then((steamID) => {
+                    Global.NeDB.checkProfile(steamID).then((cases) => {
                         if (cases) {
                             var recentCases = 0;
-                            cases.forEach(function(_case) {
+                            cases.forEach((_case) => {
                                 if ((Date.now() - _case.timestamp) > (60 * 60 * (parseInt(Global.Config.overwatchPeriod) || 72))) {
                                     recentCases++;
                                 }
@@ -63,13 +63,13 @@ module.exports = function(Global) {
                         } else {
                             sendMsg('This profile is not in our overwatch database.');
                         }
-                    }).catch(function() {
+                    }).catch(() => {
                         sendMsg('Unable to check the profile because of an error.');
                     });
-                }).catch(function() {
+                }).catch(() => {
                     sendMsg('Invalid Argument.\nUsage: /check <steamID64|profileURL>');
                 });
             }
         }
-    }.bind(this));
+    });
 }

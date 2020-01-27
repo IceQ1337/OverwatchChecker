@@ -17,6 +17,7 @@ However, on a large scale this could be very useful. You could check a current o
 ## Requirements
 In order to use this bot, you need the following dependencies and tokens:
 - Node.js
+- Git (Needed to install a dependency from GitHub)
 - At least 1 Steam-Account with access to Overwatch Cases.
 - Telegram Bot Token: https://core.telegram.org/bots#6-botfather
 - Telegram Chat ID: [Retrieve your Telegram Chat ID](#retrieve-your-telegram-chat-id)
@@ -36,14 +37,27 @@ In order to use this bot, you need the following dependencies and tokens:
 **Make sure you have everything set up properly!**  
 
 ## Configuration
+### config.json
 ```javascript
 {
-	"telegramBotToken": "Telegram Bot Token", // Your Telegram Bot Token
-	"telegramMasterChatID": "Telegram Chat ID", // Your Telegram Chat ID
+	"telegramBotToken": "", // Your Telegram Bot Token
+	"telegramMasterChatID": "", // Your Telegram Chat ID
 	"overwatchPeriod": "72", // Time period in which an overwatch case is considered active (in hours)
 	"overwatchVerdict": "0000", // 0 = Not enough evidence, 1 = Evidence beyond a reasonable doubt
 	"whitelist": [] // Accounts you don't want to report
 }
+```
+
+### accounts.json
+```javascript
+[
+	{
+		"username": "", // Your Steam Username
+		"password": "", // Your Steam Password
+		"sharedSecret": "", // OPTIONAL - A Secret Key for 2FA-Auth
+		"authCode": "" // OPTIONAL - A Steam-Guard Auth-Code
+	}
+]
 ```
 
 ## Usage
