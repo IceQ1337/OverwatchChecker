@@ -67,20 +67,27 @@ module.exports = function() {
     };
 
     this.checkProfile = (steamID64) => {
-        const database = this.db;
-        const db_keys = Object.keys(database);
         return new Promise((resolve, reject) => {
-            for (const db_key of db_keys) {
-                database[db_key].find({ steamid64: steamID64.toString() }, (err, cases) => {
+            const database = this.db;
+            const dbKeys = Object.keys(database);
+            var profileCases = [];
+
+            for (const dbKey of dbKeys) {
+                database[dbKey].find({ suspectid64: steamID64.toString() }, (err, cases) => {
                     if (err) {
                         console.error(`[${new Date().toUTCString()}] NEDB (checkProfile) > ${err}`);
-                        reject();
                     }
 
-                    if (cases && cases.length > 0) {
-                        resolve(cases);
-                    } else {
-                        resolve();
+                    if (cases) {
+                        profileCases = profileCases.concat(cases);
+                    }
+
+                    if (dbKey == dbKeys[dbKeys.length -1]) {
+                        if (profileCases.length > 0) {
+                            resolve(profileCases);
+                        } else {
+                            resolve();
+                        }
                     }
                 });
             }
