@@ -59,7 +59,7 @@ module.exports = function(Global) {
                                     recentCases++;
                                 }
                             });
-                            sendMsg(`Total Cases: ${totalCases.length} | Recent Cases: ${recentCases}`);
+                            sendMsg(`Total Cases: ${cases.length} | Recent Cases: ${recentCases}`);
                         } else {
                             sendMsg('This profile is not in our overwatch database.');
                         }
