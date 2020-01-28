@@ -53,16 +53,18 @@ module.exports = function() {
     };
 
     this.searchWatchlist = (steamID64) => {
-        Watchlist.findOne({ steamid64: steamID64.toString() }, (err, profile) => {
-            if (err) {
-                console.error(`[${new Date().toUTCString()}] NEDB (searchWatchlist) > ${err}`);
-                return false;
-            }
-
-            if (profile) {
-                return true;
-            }
-            return false;
+        return new Promise((resolve, reject) => {
+            Watchlist.findOne({ steamid64: steamID64.toString() }, (err, profile) => {
+                if (err) {
+                    console.error(`[${new Date().toUTCString()}] NEDB (searchWatchlist) > ${err}`);
+                    reject();
+                }
+    
+                if (profile) {
+                    resolve();
+                }
+                reject();
+            });
         });
     };
 

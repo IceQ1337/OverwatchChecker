@@ -77,10 +77,10 @@ module.exports = function(steamUser, Global) {
                         Global.Telegram.sendMsg(`Overwatch Suspect in **Whitelist**!\nAccount: ${this.steamUser.steamID}\nSuspect: ${profileURL}\nDemo: ${escapedCaseURL}`);
                     }
 
-                    if (Global.NeDB.searchWatchlist(steamID64)) {
+                    Global.NeDB.searchWatchlist(steamID64).then(() => {
                         console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Suspect in Watchlist: ${steamID64}`);
-                        Global.Telegram.sendMsg(`Overwatch Suspect in **Watchlist**!\nAccount: ${this.steamUser.steamID}\nSuspect: ${profileURL}\nDemo: ${escapedCaseURL}`);                       
-                    }
+                        Global.Telegram.sendMsg(`Overwatch Suspect in **Watchlist**!\nAccount: ${this.steamUser.steamID}\nSuspect: ${profileURL}\nDemo: ${escapedCaseURL}`);  
+                    });
     
                     console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > Completing Overwatch Case: ${assignment.caseid}`);
                     this.requestOverwatchCaseUpdate({
