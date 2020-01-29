@@ -29,4 +29,9 @@ module.exports = function(steamAccount, steamAccountIndex, Global) {
     this.steamUser.on('error', (err) => {
         console.error(new Error(`[${new Date().toUTCString()}] STEAM (${this.steamAccount.username}) > ${err}`));
     });
+
+    this.csgoClient.eventEmitter.on('disconnected', () => {
+        console.log(`[${new Date().toUTCString()}] STEAM (${this.steamAccount.username}) > Re-Connecting to Steam.`);
+        this.logOn();
+    });
 }

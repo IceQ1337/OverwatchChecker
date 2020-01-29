@@ -1,9 +1,12 @@
 const GlobalOffensive = require('globaloffensive');
 const SteamID = require('steamid');
+const Events = require('events');
 
 module.exports = function(steamUser, Global) {
     this.steamUser = steamUser;
     this.csgoClient = new GlobalOffensive(this.steamUser);
+    this.eventEmitter = new Events.EventEmitter();
+
     this.connectedToGC = false; // this.csgoClient.haveGCSession;
     this.playersProfile = -1;
     this.lastCaseID = -1;
@@ -19,8 +22,13 @@ module.exports = function(steamUser, Global) {
         if (this.csgoClient.haveGCSession) {
             this.csgoClient.requestOverwatchCaseUpdate(caseupdate || { reason: 1 });
         } else {
-            console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
-            setTimeout(() => { this.requestOverwatchCaseUpdate(caseupdate); }, 1000 * 30);
+            if (!this.steamUser.steamID) {
+                console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Disconnected from Steam.`);
+                this.eventEmitter.emit('disconnected');
+            } else {
+                console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
+                setTimeout(() => { this.requestOverwatchCaseUpdate(caseupdate); }, 1000 * 30);
+            }
         }
     };
 
