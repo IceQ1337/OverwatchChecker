@@ -34,8 +34,8 @@ module.exports = function(steamUser, Global) {
                     this.eventEmitter.emit('relog');
                 } else {
                     this.failedRequests++;
-                    console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
-                    setTimeout(() => { this.requestOverwatchCaseUpdate(caseupdate); }, 1000 * 30);
+                    console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in ${30 * this.failedRequests} seconds.`);
+                    setTimeout(() => { this.requestOverwatchCaseUpdate(caseupdate); }, 1000 * 30 * this.failedRequests);
                 }
             }
         }
