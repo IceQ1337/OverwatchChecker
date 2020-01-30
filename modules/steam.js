@@ -7,6 +7,8 @@ module.exports = function(steamAccount, steamAccountIndex, Global) {
     this.steamUser = new SteamUser();
     this.csgoClient = new Global.CSGO(this.steamUser, Global);
 
+    this.relog = false;
+
     this.logOn = () => {
         var logonOptions = { accountName: this.steamAccount.username, password: this.steamAccount.password };
         if (this.steamAccount.sharedSecret) {
@@ -26,6 +28,13 @@ module.exports = function(steamAccount, steamAccountIndex, Global) {
         Global.NeDB.createDB(this.steamUser.steamID);
     });
 
+    this.steamUser.on('disconnected', (eresult, msg) => {
+        if (this.relog) {
+            this.relog = false;
+            this.logOn();
+        }
+    });
+
     this.steamUser.on('error', (err) => {
         console.error(new Error(`[${new Date().toUTCString()}] STEAM (${this.steamAccount.username}) > ${err}`));
     });
@@ -33,5 +42,11 @@ module.exports = function(steamAccount, steamAccountIndex, Global) {
     this.csgoClient.eventEmitter.on('disconnected', () => {
         console.log(`[${new Date().toUTCString()}] STEAM (${this.steamAccount.username}) > Re-Connecting to Steam.`);
         this.logOn();
+    });
+
+    this.csgoClient.eventEmitter.on('relog', () => {
+        console.log(`[${new Date().toUTCString()}] STEAM (${this.steamAccount.username}) > Relogging in to Steam.`);
+        this.relog = true;
+        this.steamUser.logOff();
     });
 }

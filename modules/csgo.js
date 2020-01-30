@@ -11,6 +11,8 @@ module.exports = function(steamUser, Global) {
     this.playersProfile = -1;
     this.lastCaseID = -1;
 
+    this.failedRequests = 0;
+
     this.hasOverwatchAccess = (profile) => {
         if (profile.vac_banned || profile.penalty_seconds > 0 || profile.ranking.rank_id < 7 || profile.ranking.wins < 150) {
             return false;
@@ -20,14 +22,21 @@ module.exports = function(steamUser, Global) {
 
     this.requestOverwatchCaseUpdate = (caseupdate) => {
         if (this.csgoClient.haveGCSession) {
+            this.failedRequests = 0;
             this.csgoClient.requestOverwatchCaseUpdate(caseupdate || { reason: 1 });
         } else {
             if (!this.steamUser.steamID) {
                 console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Disconnected from Steam.`);
                 this.eventEmitter.emit('disconnected');
             } else {
-                console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
-                setTimeout(() => { this.requestOverwatchCaseUpdate(caseupdate); }, 1000 * 30);
+                if (this.failedRequests >= 10) {
+                    console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Failed 10 Times.`);
+                    this.eventEmitter.emit('relog');
+                } else {
+                    this.failedRequests++;
+                    console.log(`[${new Date().toUTCString()}] CSGO (${this.steamUser.steamID}) > No GC Connection. Retrying in 30 seconds.`);
+                    setTimeout(() => { this.requestOverwatchCaseUpdate(caseupdate); }, 1000 * 30);
+                }
             }
         }
     };
