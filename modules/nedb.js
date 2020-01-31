@@ -11,12 +11,14 @@ module.exports = function() {
     this.db = {};
 
     this.createDB = (accountID) => {
-        this.db[accountID] = new Datastore({ filename: './datastore/' + accountID + '.db', autoload: true });
-        this.db[accountID].ensureIndex({ fieldName: 'caseid', unique: true }, (err) => {
-            if (err) {
-                console.error(`[${new Date().toUTCString()}] NEDB (createDB) > ${err}`);
-            }
-        });
+        if (!this.db[accountID]) {
+            this.db[accountID] = new Datastore({ filename: './datastore/' + accountID + '.db', autoload: true });
+            this.db[accountID].ensureIndex({ fieldName: 'caseid', unique: true }, (err) => {
+                if (err) {
+                    console.error(`[${new Date().toUTCString()}] NEDB (createDB) > ${err}`);
+                }
+            });
+        }
     };
 
     this.saveOverwatchCase = (accountID, assignment, steamID64) => {
