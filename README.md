@@ -24,7 +24,7 @@ In order to use this bot, you need the following dependencies and tokens:
 
 ## Installation
 - Make sure you have the latest version of [Node.js](https://nodejs.org/) installed.
-- Download this repository as a ZIP file and unpack it wherever you like.
+- Download this repository as [ZIP](https://github.com/IceQ1337/OverwatchChecker/archive/master.zip) and unpack it wherever you like.
 - Go into the `configs` folder and rename `config.json.example` to `config.json`
 - Edit `config.json` and customize it as you like.
 - Go into the `configs` folder and rename `accounts.json.example` to `accounts.json`
