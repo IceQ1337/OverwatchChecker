@@ -4,6 +4,14 @@ const SteamID = require('steamid');
 module.exports = function(Global) {
     this.masterID = Global.Config.telegramMasterChatID;
     this.telegramBot = new TelegramAPI({ token: Global.Config.telegramBotToken, updates: { enabled: true, get_interval: 2000 } });
+    
+    this.telegramMessageProvider = new TelegramAPI.GetUpdateMessageProvider();
+    this.telegramBot.setMessageProvider(this.telegramMessageProvider);
+    this.telegramBot.start().then(() => {
+        console.log(`[${new Date().toUTCString()}] TELEGRAM (start) > Telegram Bot Started.`);
+    }).catch((err) => {
+        console.error(`[${new Date().toUTCString()}] TELEGRAM (start) > ${err}`);
+    })
 
     this.sendMsg = (msg, chatID = this.masterID) => {
         this.telegramBot.sendMessage({
@@ -31,7 +39,13 @@ module.exports = function(Global) {
         });
     }
 
-    this.telegramBot.on('message', (message) => {
+    this.telegramBot.on('update', (update) => {
+        if (update.message) {
+            this.telegramBot.onMessage(update.message);
+        }
+    });
+
+    this.telegramBot.onMessage = (message) => {
         const chatID = message.from.id;
         const msg = message.text;
         const sendMsg = this.sendMsg;
@@ -71,5 +85,5 @@ module.exports = function(Global) {
                 });
             }
         }
-    });
+    };
 }
