@@ -27,7 +27,7 @@
     "globaloffensive": "github:IceQ1337-Forks/node-globaloffensive#master",
     "nedb": "^1.8.0",
     "steam-totp": "^2.1.1",
-    "steam-user": "^4.19.9",
+    "steam-user": "^4.19.10",
     "steamid": "^1.1.3",
     "telegram-bot-api": "^2.0.1"
   }
