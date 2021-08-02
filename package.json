@@ -28,7 +28,7 @@
     "nedb": "^1.8.0",
     "steam-totp": "^2.1.1",
     "steam-user": "^4.19.12",
-    "steamid": "^1.1.3",
+    "steamid": "^2.0.0",
     "telegram-bot-api": "^2.0.1"
   }
 }
